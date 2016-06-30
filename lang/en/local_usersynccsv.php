@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ *
+ * User Sync CSV.
+ *
+ * @package   local_usersynccsv
+ * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['pluginname'] = 'User Sync CSV';
 $string['modulenameplural'] = 'User Sync CSV';
 $string['modulename_help'] = 'Synchronize Users with external system by means of CSV files';
