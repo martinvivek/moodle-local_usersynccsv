@@ -16,10 +16,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$context = context_system::instance();
-
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_usersynccsv', get_string('pluginname', 'local_usersynccsv'));
+
     $settings->add(new admin_setting_configtext('local_usersynccsv/importdir',
-        get_string('importdir', 'local_usersynccsv'), get_string('importdirdesc', 'local_usersynccsv'), ''));
+        get_string('importdir', 'local_usersynccsv'), get_string('importdir_help', 'local_usersynccsv'), ''));
+
+    $settings->add(new admin_setting_configcheckbox('local_usersynccsv/isexport',
+        get_string('isexport', 'local_usersynccsv'), get_string('isexport_help', 'local_usersynccsv'), '0'));
+    $settings->add(new admin_setting_configtext('local_usersynccsv/exportdir',
+        get_string('exportdir', 'local_usersynccsv'), get_string('exportdir_help', 'local_usersynccsv'), ''));
+    $ADMIN->add('localplugins', $settings);
 }

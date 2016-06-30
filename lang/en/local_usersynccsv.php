@@ -19,5 +19,9 @@ $string['modulenameplural'] = 'User Sync CSV';
 $string['modulename_help'] = 'Synchronize Users with external system by means of CSV files';
 
 $string['pluginadministration'] = 'User Sync CSV administration';
-$string['importdir'] = 'Import directory';
-$string['importdirdesc'] = 'Full path of the working directory. Must have read/write access';
+$string['importdir'] = 'Import Directory';
+$string['importdir_help'] = 'Full path of the working import directory. Moodle needs to have read/write access to this folder, otherwise the plugin won\'t work';
+$string['isexport'] = 'Export User Data';
+$string['isexport_help'] = 'If checked, we will export user data to a CSV file in the directory set by exportdir';
+$string['exportdir'] = 'Export Directory';
+$string['exportdir_help'] = 'Full path of the working export directory. Moodle needs to have read/write access to this folder, otherwise the plugin won\'t work';
