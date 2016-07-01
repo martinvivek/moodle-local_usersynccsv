@@ -36,7 +36,7 @@ global $CFG;
 class local_usersynccsv_fileman_testcase extends advanced_testcase {
 
     public function test_mocktest() {
-        $events=1;
+        $events=0;
         $this->assertEquals(0, $events);
     }
 
