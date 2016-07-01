@@ -27,4 +27,4 @@ require_once('../../config.php');
 
 
 
-$fm= new local_usersynccsv_fileman();
+$fm = new local_usersynccsv_fileman();
