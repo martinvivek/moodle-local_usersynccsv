@@ -28,3 +28,8 @@ require_once('../../config.php');
 
 
 $fm = new local_usersynccsv_fileman();
+$files = $fm->listnewimportfiles();
+
+foreach ($files as $file) {
+    $fm->movefiletoarchivedir($file);
+}

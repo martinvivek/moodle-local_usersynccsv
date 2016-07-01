@@ -55,6 +55,66 @@ class local_usersynccsv_fileman
     }
 
     /**
+     * Check for new files to work
+     * @return array list of files to be imported. The files are sorted by creation date, ascending. So older first
+     */
+    public function listnewimportfiles(){
+        $files = array();
+        if ($handle = opendir($this->importdir)) {
+            while (false !== ($file = readdir($handle))) {
+                $filefullpath = $this->importdir . DIRECTORY_SEPARATOR . $file;
+                if (!is_dir($filefullpath)) {
+                    $files[filemtime(utf8_decode($filefullpath))] = $filefullpath;
+                }
+            }
+            closedir($handle);
+            // Sort by key, ie creation date.
+            ksort($files);
+        }
+        return $files;
+    }
+
+    /**
+     * Move file to working directory
+     * @param string $filefullpath full path of the file to be moved
+     * @return bool true on success
+     */
+    public function movefiletoworkdir($filefullpath){
+
+    }
+
+    /**
+     * Move file to archive directory
+     * @param string $filefullpath full path of the file to be moved
+     * @return bool true on success
+     */
+    public function movefiletoarchivedir($filefullpath){
+        $archivesubdir = $this->getarchivesubdir($filefullpath);
+        if  (!file_exists($archivesubdir)) {
+            echo $archivesubdir;
+            $this->makedir($archivesubdir);
+        }
+        rename($filefullpath, $archivesubdir . DIRECTORY_SEPARATOR . basename($filefullpath));
+    }
+
+    /**
+     * Clean up archive dir, according to configuration params
+     * @return bool true on success
+     */
+    public function cleanuparchivedir(){
+
+    }
+
+    /**
+     * Get archivedir full name, according to file and current date
+     * @param $filefullpath
+     * @return string archive sub dir full path
+     */
+    private function getarchivesubdir($filefullpath){
+        //we get the archive dir according to the current date
+        return $this->fullarchivedir . DIRECTORY_SEPARATOR . gmdate("Ymd");
+    }
+    /**
      * Check import dir structure to see if every required subfolder exists
      */
     private function checkconfigdirs() {
@@ -71,15 +131,22 @@ class local_usersynccsv_fileman
             $this->handlefatalerror('exportdirnotwritable', 'local_usersynccsv', $this->exportdir);
         }
 
-        // Now check subfolders.
+        // Now check subfolders. Make them if they don't exist.
         if (!file_exists($this->fullworkdir)) {
-            mkdir($this->fullworkdir, '0700');
+            $this->makedir($this->fullworkdir);
+
         }
         if (!file_exists($this->fullarchivedir)) {
-            mkdir($this->fullarchivedir, '0700');
+            $this->makedir($this->fullarchivedir);
         }
     }
 
+    /**
+     * @param string $dirfullpath
+     */
+    private function makedir($dirfullpath){
+        mkdir($dirfullpath,'755'); //TODO
+    }
     /**
      * TODO
      * @param string $smgconst to be resolved with get_string
