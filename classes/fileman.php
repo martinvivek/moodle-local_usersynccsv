@@ -96,7 +96,7 @@ class local_usersynccsv_fileman
      */
     public function movefiletoarchivedir($filefullpath) {
         $archivesubdir = $this->getarchivesubdir($filefullpath);
-        if  (!file_exists($archivesubdir)) {
+        if (!file_exists($archivesubdir)) {
             echo $archivesubdir;
             $this->makedir($archivesubdir);
         }
@@ -107,7 +107,7 @@ class local_usersynccsv_fileman
      * Clean up archive dir, according to configuration params
      * @return bool true on success
      */
-    public function cleanuparchivedir(){
+    public function cleanuparchivedir() {
 
     }
 
@@ -148,10 +148,11 @@ class local_usersynccsv_fileman
     }
 
     /**
+     * TODO
      * @param string $dirfullpath
      */
     private function makedir($dirfullpath) {
-        mkdir($dirfullpath, '755'); //TODO
+        mkdir($dirfullpath, '755');
     }
     /**
      * TODO
