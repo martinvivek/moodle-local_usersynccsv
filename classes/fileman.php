@@ -25,7 +25,13 @@
 
 
 defined('MOODLE_INTERNAL') || die();
-
+/**
+ * File and directory manager
+ *
+ * @package    local_usersynccs
+ * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class local_usersynccsv_fileman
 {
     private static $workdir = 'work';
@@ -58,7 +64,7 @@ class local_usersynccsv_fileman
      * Check for new files to work
      * @return array list of files to be imported. The files are sorted by creation date, ascending. So older first
      */
-    public function listnewimportfiles(){
+    public function listnewimportfiles() {
         $files = array();
         if ($handle = opendir($this->importdir)) {
             while (false !== ($file = readdir($handle))) {
@@ -79,7 +85,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return bool true on success
      */
-    public function movefiletoworkdir($filefullpath){
+    public function movefiletoworkdir($filefullpath) {
 
     }
 
@@ -88,7 +94,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return bool true on success
      */
-    public function movefiletoarchivedir($filefullpath){
+    public function movefiletoarchivedir($filefullpath) {
         $archivesubdir = $this->getarchivesubdir($filefullpath);
         if  (!file_exists($archivesubdir)) {
             echo $archivesubdir;
@@ -110,8 +116,8 @@ class local_usersynccsv_fileman
      * @param $filefullpath
      * @return string archive sub dir full path
      */
-    private function getarchivesubdir($filefullpath){
-        //we get the archive dir according to the current date
+    private function getarchivesubdir($filefullpath) {
+        // We get the archive dir according to the current date.
         return $this->fullarchivedir . DIRECTORY_SEPARATOR . gmdate("Ymd");
     }
     /**
@@ -144,8 +150,8 @@ class local_usersynccsv_fileman
     /**
      * @param string $dirfullpath
      */
-    private function makedir($dirfullpath){
-        mkdir($dirfullpath,'755'); //TODO
+    private function makedir($dirfullpath) {
+        mkdir($dirfullpath, '755'); //TODO
     }
     /**
      * TODO
