@@ -73,10 +73,10 @@ class local_usersynccsv_fileman
 
         // Now check subfolders.
         if (!file_exists($this->fullworkdir)) {
-            mkdir($this->fullworkdir,'0700');
+            mkdir($this->fullworkdir, '0700');
         }
         if (!file_exists($this->fullarchivedir)) {
-            mkdir($this->fullarchivedir,'0700');
+            mkdir($this->fullarchivedir, '0700');
         }
     }
 
@@ -87,8 +87,8 @@ class local_usersynccsv_fileman
      * @param string $a optional $smgconst parameter
      * @throws coding_exception
      */
-    private function handlefatalerror($smgconst,$component='local_usersynccsv',$a=null) {
-        echo get_string($smgconst,$component,$a);
+    private function handlefatalerror($smgconst, $component='local_usersynccsv', $a=null) {
+        echo get_string($smgconst, $component, $a);
         die;
     }
 
