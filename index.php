@@ -22,3 +22,9 @@
  * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+require_once('../../config.php');
+
+
+
+$fm= new local_usersynccsv_fileman();

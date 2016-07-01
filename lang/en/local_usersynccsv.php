@@ -29,8 +29,18 @@ $string['modulename_help'] = 'Synchronize Users with external system by means of
 
 $string['pluginadministration'] = 'User Sync CSV administration';
 $string['importdir'] = 'Import Directory';
-$string['importdir_help'] = 'Full path of the working import directory. Moodle needs to have read/write access to this folder, otherwise the plugin won\'t work';
+$string['importdir_help'] = 'Full path of the working import directory. It must exist on the FileSystem, and Moodle needs to have read/write access to this folder, otherwise the plugin won\'t work';
+$string['archivedirmaxday'] = 'Max Archive Retention Day';
+$string['archivedirmaxday_help'] = 'Max retention days of archive dir';
+$string['archivedirmaxsize'] = 'Max Archive Retention Size';
+$string['archivedirmaxsize_help'] = 'Max retention size of archive dir, in MB';
 $string['isexport'] = 'Export User Data';
 $string['isexport_help'] = 'If checked, we will export user data to a CSV file in the directory set by exportdir';
 $string['exportdir'] = 'Export Directory';
-$string['exportdir_help'] = 'Full path of the working export directory. Moodle needs to have read/write access to this folder, otherwise the plugin won\'t work';
+$string['exportdir_help'] = 'Only used if exportdir is true. Full path of the working export directory. Moodle needs to have read/write access to this folder, otherwise the plugin won\'t work';
+
+$string['importdirmissing'] = 'Could not find import dir: {$a}';
+$string['importdirnotwritable'] = 'Import dir is not writable. Please check dir permissions: {$a}';
+
+$string['exportdirmissing'] = 'Could not find export dir: {$a}';
+$string['exportdirnotwritable'] = 'Export dir is not writable. Please check dir permissions: {$a}';
