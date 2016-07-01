@@ -28,8 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 
 class local_usersynccsv_fileman
 {
-    private static $workdir='work';
-    private static $archivedir='archive';
+    private static $workdir = 'work';
+    private static $archivedir = 'archive';
 
     private $importdir;
     private $isexport;
@@ -57,25 +57,25 @@ class local_usersynccsv_fileman
     /**
      * Check import dir structure to see if every required subfolder exists
      */
-    private function checkconfigdirs(){
-        if (!file_exists($this->importdir)){
+    private function checkconfigdirs() {
+        if (!file_exists($this->importdir)) {
             $this->handlefatalerror('importdirmissing', 'local_usersynccsv', $this->importdir);
         }
-        if (!is_writable($this->importdir)){
+        if (!is_writable($this->importdir)) {
             $this->handlefatalerror('importdirnotwritable', 'local_usersynccsv', $this->importdir);
         }
-        if ($this->isexport && !file_exists($this->exportdir)){
+        if ($this->isexport && !file_exists($this->exportdir)) {
             $this->handlefatalerror('exportdirmissing', 'local_usersynccsv', $this->exportdir);
         }
-        if ($this->isexport && !is_writable($this->exportdir)){
+        if ($this->isexport && !is_writable($this->exportdir)) {
             $this->handlefatalerror('exportdirnotwritable', 'local_usersynccsv', $this->exportdir);
         }
 
-        // Now check subfolders
-        if (!file_exists($this->fullworkdir)){
+        // Now check subfolders.
+        if (!file_exists($this->fullworkdir)) {
             mkdir($this->fullworkdir,'0700');
         }
-        if (!file_exists($this->fullarchivedir)){
+        if (!file_exists($this->fullarchivedir)) {
             mkdir($this->fullarchivedir,'0700');
         }
     }
@@ -87,7 +87,7 @@ class local_usersynccsv_fileman
      * @param string $a optional $smgconst parameter
      * @throws coding_exception
      */
-    private function handlefatalerror($smgconst,$component='local_usersynccsv',$a=null){
+    private function handlefatalerror($smgconst,$component='local_usersynccsv',$a=null) {
         echo get_string($smgconst,$component,$a);
         die;
     }
