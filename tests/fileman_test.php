@@ -40,14 +40,14 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
     public function test_create_instance() {
         $this->resetAfterTest();
         $this->setAdminUser();
-        $events=2;
+        $events = 2;
         $this->assertEquals(2, $events);
     }
 
     public function test_mocktest() {
         $this->resetAfterTest();
         $this->setAdminUser();
-        $events=0;
+        $events = 1;
         $this->assertEquals(0, $events);
     }
 
