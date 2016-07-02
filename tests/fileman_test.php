@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Events tests.
  *
- * @package    mod_chat
- * @copyright  2013 Frédéric Massart
+ * User Sync CSV.
+ *
+ * @package   local_usersynccsv
+ * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,20 +28,25 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 /**
- * Events tests class.
  *
- * @package    mod_chat
- * @copyright  2013 Frédéric Massart
+ * User Sync CSV.
+ *
+ * @package   local_usersynccsv
+ * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_usersynccsv_fileman_testcase extends advanced_testcase {
 
-    public function setUp() {
-        $this->setAdminUser();
+    public function test_create_instance() {
         $this->resetAfterTest();
+        $this->setAdminUser();
+        $events=2;
+        $this->assertEquals(2, $events);
     }
 
     public function test_mocktest() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
         $events=0;
         $this->assertEquals(0, $events);
     }
