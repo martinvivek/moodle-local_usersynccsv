@@ -47,7 +47,7 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
     public function test_mocktest() {
         $this->resetAfterTest();
         $this->setAdminUser();
-        $events = 1;
+        $events = 0;
         $this->assertEquals(0, $events);
     }
 
