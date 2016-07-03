@@ -41,11 +41,11 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        try{
+        try {
             $fm = new local_usersynccsv_fileman();
-            $fmok=true;
+            $fmok = true;
         }catch (Error $e){
-            $fmok=false;
+            $fmok = false;
         }
         $this->assertEquals(true, $fmok);
     }
