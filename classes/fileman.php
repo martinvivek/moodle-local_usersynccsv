@@ -46,6 +46,7 @@ class local_usersynccsv_fileman
     private $fullworkdir;
     private $fullarchivedir;
     public function __construct() {
+        
         $config = get_config('local_usersynccsv');
         $this->importdir = $config->importdir;
         $this->checkdirvarslash('importdir');
@@ -116,7 +117,7 @@ class local_usersynccsv_fileman
      * @return bool true on success
      */
     public function movefiletoarchivedir($filefullpath) {
-        $archivesubdir = $this->getarchivesubdir($filefullpath);
+        $archivesubdir = $this->getarchivesubdir();
         if (!file_exists($archivesubdir)) {
             $this->makedir($archivesubdir);
         }
