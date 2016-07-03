@@ -48,13 +48,23 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
             $fmok = false;
         }
         $this->assertEquals(true, $fmok);
-    }
 
-    public function test_mocktest() {
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $events = 0;
-        $this->assertEquals(0, $events);
+        // Create a couple of mock import files
+        $mokcfile = fopen($fm->getimportdir() . 'importtestone', "w");
+        fclose($mokcfile);
+        $mokcfile = fopen($fm->getimportdir() . 'importtesttwo', "w");
+        fclose($mokcfile);
+        $files=$fm->listnewimportfiles();
+
+        $this->assertEquals(2, $files);
+
+        foreach ($files as $file){
+            $fm->movefiletoarchivedir($file);
+        }
+        $direxists = file_exists($fm->getfullarchivedir() . DIRECTORY_SEPARATOR . gmdate("Ymd"));
+
+        $this->assertEquals(true, $direxists);
+
     }
 
 }

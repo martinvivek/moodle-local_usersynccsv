@@ -46,11 +46,29 @@ class local_usersynccsv_fileman
     public function __construct() {
         $config = get_config('local_usersynccsv');
         $this->importdir = $config->importdir;
+        $this->checkdirvarslash('importdir');
         $this->isexport = $config->isexport;
+        $this->checkdirvarslash('isexport');
         $this->exportdir = $config->exportdir;
+        $this->checkdirvarslash('exportdir');
         $this->fullworkdir = $this->importdir . DIRECTORY_SEPARATOR . self::$workdir;
+        $this->checkdirvarslash('fullworkdir');
         $this->fullarchivedir = $this->importdir . DIRECTORY_SEPARATOR . self::$archivedir;
+        $this->checkdirvarslash('fullarchivedir');
+
         $this->checkconfigdirs();
+    }
+
+    private function checkdirvarslash($dirvarname) {
+        if (substr($this->$dirvarname, -1) != DIRECTORY_SEPARATOR){
+            $this->$dirvarname .= DIRECTORY_SEPARATOR;
+        }
+    }
+    public function getfullarchivedir() {
+        return $this->fullarchivedir;
+    }
+    public function getimportdir() {
+        return $this->importdir;
     }
     /**
      * Old syntax of class constructor. Deprecated in PHP7.
