@@ -44,7 +44,7 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
         try {
             $fm = new local_usersynccsv_fileman();
             $fmok = true;
-        }catch (Error $e){
+        } catch (Error $e){
             $fmok = false;
         }
         $this->assertEquals(true, $fmok);
