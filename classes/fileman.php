@@ -25,6 +25,7 @@
 
 
 defined('MOODLE_INTERNAL') || die();
+
 /**
  * File and directory manager
  *
@@ -97,7 +98,6 @@ class local_usersynccsv_fileman
     public function movefiletoarchivedir($filefullpath) {
         $archivesubdir = $this->getarchivesubdir($filefullpath);
         if (!file_exists($archivesubdir)) {
-            echo $archivesubdir;
             $this->makedir($archivesubdir);
         }
         rename($filefullpath, $archivesubdir . DIRECTORY_SEPARATOR . basename($filefullpath));
@@ -112,11 +112,10 @@ class local_usersynccsv_fileman
     }
 
     /**
-     * Get archivedir full name, according to file and current date
-     * @param $filefullpath
+     * Get archivedir full name, according to the current date
      * @return string archive sub dir full path
      */
-    private function getarchivesubdir($filefullpath) {
+    private function getarchivesubdir() {
         // We get the archive dir according to the current date.
         return $this->fullarchivedir . DIRECTORY_SEPARATOR . gmdate("Ymd");
     }
@@ -152,7 +151,9 @@ class local_usersynccsv_fileman
      * @param string $dirfullpath
      */
     private function makedir($dirfullpath) {
-        mkdir($dirfullpath, '755');
+        global $CFG;
+
+        @mkdir($dirfullpath, $CFG->directorypermissions, false);
     }
     /**
      * TODO
