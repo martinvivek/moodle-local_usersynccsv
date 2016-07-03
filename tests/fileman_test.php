@@ -49,16 +49,16 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
         }
         $this->assertEquals(true, $fmok);
 
-        // Create a couple of mock import files
+        // Create a couple of mock import files.
         $mokcfile = fopen($fm->getimportdir() . 'importtestone', "w");
         fclose($mokcfile);
         $mokcfile = fopen($fm->getimportdir() . 'importtesttwo', "w");
         fclose($mokcfile);
-        $files=$fm->listnewimportfiles();
+        $files = $fm->listnewimportfiles();
 
         $this->assertEquals(2, $files);
 
-        foreach ($files as $file){
+        foreach ($files as $file) {
             $fm->movefiletoarchivedir($file);
         }
         $direxists = file_exists($fm->getfullarchivedir() . DIRECTORY_SEPARATOR . gmdate("Ymd"));

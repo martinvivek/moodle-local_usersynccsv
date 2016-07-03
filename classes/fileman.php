@@ -60,7 +60,7 @@ class local_usersynccsv_fileman
     }
 
     private function checkdirvarslash($dirvarname) {
-        if (substr($this->$dirvarname, -1) != DIRECTORY_SEPARATOR){
+        if (substr($this->$dirvarname, -1) != DIRECTORY_SEPARATOR) {
             $this->$dirvarname .= DIRECTORY_SEPARATOR;
         }
     }
