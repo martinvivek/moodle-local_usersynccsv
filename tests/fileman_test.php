@@ -43,7 +43,12 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
 
         try {
             $fm = new local_usersynccsv_fileman();
-            $fmok = true;
+            if ($fm->iserror) {
+                $fmok=false;
+            } else {
+                $fmok = true;
+            }
+
         } catch (Error $e) {
             $fmok = false;
         }
@@ -56,7 +61,7 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
         fclose($mokcfile);
         $files = $fm->listnewimportfiles();
 
-        $this->assertEquals(22, $files);
+        $this->assertEquals(2, $files);
 
         foreach ($files as $file) {
             $fm->movefiletoarchivedir($file);
@@ -65,13 +70,6 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
 
         $this->assertEquals(true, $direxists);
 
-    }
-
-    public function test_mocktest() {
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $events = 1;
-        $this->assertEquals(0, $events);
     }
 
 }

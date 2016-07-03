@@ -35,6 +35,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 class local_usersynccsv_fileman
 {
+    public $iserror = false;
+    public $errormsg = '';
     private static $workdir = 'work';
     private static $archivedir = 'archive';
 
@@ -143,15 +145,19 @@ class local_usersynccsv_fileman
     private function checkconfigdirs() {
         if (!file_exists($this->importdir)) {
             $this->handlefatalerror('importdirmissing', 'local_usersynccsv', $this->importdir);
+            return;
         }
         if (!is_writable($this->importdir)) {
             $this->handlefatalerror('importdirnotwritable', 'local_usersynccsv', $this->importdir);
+            return;
         }
         if ($this->isexport && !file_exists($this->exportdir)) {
             $this->handlefatalerror('exportdirmissing', 'local_usersynccsv', $this->exportdir);
+            return;
         }
         if ($this->isexport && !is_writable($this->exportdir)) {
             $this->handlefatalerror('exportdirnotwritable', 'local_usersynccsv', $this->exportdir);
+            return;
         }
 
         // Now check subfolders. Make them if they don't exist.
@@ -181,8 +187,8 @@ class local_usersynccsv_fileman
      * @throws coding_exception
      */
     private function handlefatalerror($smgconst, $component='local_usersynccsv', $a=null) {
-        echo get_string($smgconst, $component, $a);
-        die;
+        $this->errormsg = get_string($smgconst, $component, $a);
+        $this->iserror = true;
     }
 
 }
