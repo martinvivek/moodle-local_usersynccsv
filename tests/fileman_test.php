@@ -56,7 +56,7 @@ class local_usersynccsv_fileman_testcase extends advanced_testcase {
         fclose($mokcfile);
         $files = $fm->listnewimportfiles();
 
-        $this->assertEquals(2, $files);
+        $this->assertEquals(22, $files);
 
         foreach ($files as $file) {
             $fm->movefiletoarchivedir($file);
