@@ -28,8 +28,17 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_usersynccsv', get_string('pluginname', 'local_usersynccsv'));
 
+    $settings->add(new admin_setting_configtext('local_usersynccsv/csvdelimiter',
+        get_string('csvdelimiter', 'local_usersynccsv'), get_string('csvdelimiter_help', 'local_usersynccsv'), ',', PARAM_TEXT, 1));
+    $settings->add(new admin_setting_configtext('local_usersynccsv/csvenclosure',
+        get_string('csvenclosure', 'local_usersynccsv'), get_string('csvenclosure_help', 'local_usersynccsv'), '"', PARAM_TEXT, 1));
+    $settings->add(new admin_setting_configtext('local_usersynccsv/csvescape',
+        get_string('csvescape', 'local_usersynccsv'), get_string('csvescape_help', 'local_usersynccsv'), '\\', PARAM_TEXT, 1));
+
+    $settings->add(new admin_setting_configtext('local_usersynccsv/userkey',
+        get_string('userkey', 'local_usersynccsv'), get_string('userkey_help', 'local_usersynccsv'), 'idnumber', PARAM_TEXT));
     $settings->add(new admin_setting_configtext('local_usersynccsv/importdir',
-        get_string('importdir', 'local_usersynccsv'), get_string('importdir_help', 'local_usersynccsv'), ''));
+        get_string('importdir', 'local_usersynccsv'), get_string('importdir_help', 'local_usersynccsv'), '', PARAM_TEXT));
     $settings->add(new admin_setting_configtext('local_usersynccsv/archivedirmaxday',
         get_string('archivedirmaxday', 'local_usersynccsv'), get_string('archivedirmaxday_help',
             'local_usersynccsv'), '', PARAM_INT));
@@ -40,6 +49,6 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configcheckbox('local_usersynccsv/isexport',
         get_string('isexport', 'local_usersynccsv'), get_string('isexport_help', 'local_usersynccsv'), '0'));
     $settings->add(new admin_setting_configtext('local_usersynccsv/exportdir',
-        get_string('exportdir', 'local_usersynccsv'), get_string('exportdir_help', 'local_usersynccsv'), ''));
+        get_string('exportdir', 'local_usersynccsv'), get_string('exportdir_help', 'local_usersynccsv'), '', PARAM_TEXT));
     $ADMIN->add('localplugins', $settings);
 }

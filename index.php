@@ -27,10 +27,5 @@
 require_once(__DIR__ . '/../../config.php');
 
 
-$fm = new local_usersynccsv_fileman();
-
-$files = $fm->listnewimportfiles();
-
-foreach ($files as $file) {
-    $fm->movefiletoarchivedir($file);
-}
+$us = new local_usersynccsv_usersync();
+$us->performcheck();

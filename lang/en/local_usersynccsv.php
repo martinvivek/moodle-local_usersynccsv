@@ -35,7 +35,7 @@ $string['archivedirmaxday_help'] = 'Max retention days of archive dir';
 $string['archivedirmaxsize'] = 'Max Archive Retention Size';
 $string['archivedirmaxsize_help'] = 'Max retention size of archive dir, in MB';
 $string['isexport'] = 'Export User Data';
-$string['isexport_help'] = 'If checked, we will export user data to a CSV file in the directory set by exportdir';
+$string['isexport_help'] = 'If checked, will incrementally export user data to a CSV file in the directory set by exportdir.';
 $string['exportdir'] = 'Export Directory';
 $string['exportdir_help'] = 'Only used if exportdir is true. Full path of the working export directory. Moodle needs to have read/write access to this folder, otherwise the plugin won\'t work';
 
@@ -44,3 +44,12 @@ $string['importdirnotwritable'] = 'Import dir is not writable. Please check dir 
 
 $string['exportdirmissing'] = 'Could not find export dir: {$a}';
 $string['exportdirnotwritable'] = 'Export dir is not writable. Please check dir permissions: {$a}';
+
+$string['csvdelimiter'] = 'CSV Delimiter';
+$string['csvdelimiter_help'] = 'The delimiter parameter sets the field delimiter (one character only).';
+$string['csvenclosure'] = 'CSV Enclosure';
+$string['csvenclosure_help'] = 'The enclosure parameter sets the field enclosure character (one character only).';
+$string['csvescape'] = 'CSV Escape';
+$string['csvescape_help'] = 'The escape parameter sets the escape character (one character only).';
+$string['userkey'] = 'User Key';
+$string['userkey_help'] = 'The field used to uniquely identify a user. By default it\'s idnumber, but could also be email.';
