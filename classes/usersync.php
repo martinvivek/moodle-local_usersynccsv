@@ -54,18 +54,18 @@ class local_usersynccsv_usersync
         $this->csvescape = $config->csvescape;
     }
 
-    private function reportmalformedfile($filefullpath){
+    private function reportmalformedfile($filefullpath) {
         echo $filefullpath . ' malformed';
     }
     public function performcheck() {
-        //check for new files
+        // Check for new files.
         $files = $this->fm->listnewimportfiles();
 
         foreach ($files as $file) {
             $filehandle = fopen($file, 'r');
             $csvheader = fgetcsv($filehandle, null, $this->csvdelimiter, $this->csvenclosure, $this->csvescape);
             $csvheader = array_flip($csvheader);
-            if (!array_key_exists($this->userkey,$csvheader)){
+            if (!array_key_exists($this->userkey, $csvheader)) {
                 $this->reportmalformedfile($file);
             }
             while (!feof($filehandle) ) {
@@ -75,7 +75,7 @@ class local_usersynccsv_usersync
                 }
             }
             fclose($filehandle);
-            // archive file
+            // Archive file.
             $this->fm->movefiletoarchivedir($file);
         }
 
@@ -96,22 +96,22 @@ class local_usersynccsv_usersync
         global $DB;
 
         $userkey = $csvuser[$csvheader[$this->userkey]];
-        // Look for user with key
+        // Look for user with key.
         $user = $DB->get_record('user', array($this->userkey => $userkey));
 
         if (empty($user)) {
-            // build the new user object to be put into the Moodle database
+            // Build the new user object to be put into the Moodle database.
             $user = new stdClass();
         }
         $user->modified = time();
         foreach ($csvheader as $fieldname => $fieldpos) {
-            $fieldname=trim($fieldname);
+            $fieldname = trim($fieldname);
             $user->$fieldname = $csvuser[$fieldpos];
 
         }
 
-        if(!property_exists($user, 'id')){
-            // add the new user to Moodle
+        if (!property_exists($user, 'id')) {
+            // Add the new user to Moodle.
 
             $DB->insert_record('user', $user);
             $user = $DB->get_record('user', array($this->userkey => $userkey));
@@ -120,8 +120,8 @@ class local_usersynccsv_usersync
             }
         } else {
 
-            // Update user information
-            //username "could" change. userkey should never change.
+            // Update user information.
+            // Username "could" change. userkey should never change.
             if (!$DB->update_record('user', $user)) {
                 print_error('auth_drupalservicescantupdate', 'auth_db', $user->username);
             }

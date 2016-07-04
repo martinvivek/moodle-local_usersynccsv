@@ -46,18 +46,12 @@ class local_usersynccsv_fileman
     private $fullworkdir;
     private $fullarchivedir;
     public function __construct() {
-        
         $config = get_config('local_usersynccsv');
         $this->importdir = $config->importdir;
-
         $this->isexport = $config->isexport;
-
         $this->exportdir = $config->exportdir;
-
         $this->fullworkdir = $this->importdir . DIRECTORY_SEPARATOR . self::$workdir;
-
         $this->fullarchivedir = $this->importdir . DIRECTORY_SEPARATOR . self::$archivedir;
-
 
         $this->checkconfigdirs();
     }
