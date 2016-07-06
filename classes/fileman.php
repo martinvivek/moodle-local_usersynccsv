@@ -182,38 +182,42 @@ class local_usersynccsv_fileman
         // We get the archive dir according to the current date.
         return $this->fullarchivedir . DIRECTORY_SEPARATOR . gmdate("Ymd");
     }
+
+    private function checkconfigdir($configdir){
+        if (!file_exists($configdir)) {
+            $this->handlefatalerror($configdir.'missing', 'local_usersynccsv', $configdir);
+            if (!is_writable($configdir)) {
+                $this->handlefatalerror($configdir.'notwritable', 'local_usersynccsv', $configdir);
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    private function checkrequiredsubdir($subdir){
+        if (!file_exists($subdir)) {
+            $this->makedir($subdir);
+        }
+    }
     /**
      * Check import dir structure to see if every required subfolder exists
      */
     private function checkconfigdirs() {
-        if (!file_exists($this->importdir)) {
-            $this->handlefatalerror('importdirmissing', 'local_usersynccsv', $this->importdir);
+
+        if (!$this->checkconfigdir($this->importdir)){
             return;
         }
-        if (!is_writable($this->importdir)) {
-            $this->handlefatalerror('importdirnotwritable', 'local_usersynccsv', $this->importdir);
-            return;
-        }
-        if ($this->isexport && !file_exists($this->exportdir)) {
-            $this->handlefatalerror('exportdirmissing', 'local_usersynccsv', $this->exportdir);
-            return;
-        }
-        if ($this->isexport && !is_writable($this->exportdir)) {
-            $this->handlefatalerror('exportdirnotwritable', 'local_usersynccsv', $this->exportdir);
+        if ($this->isexport && !$this->checkconfigdir($this->exportdir)){
             return;
         }
 
         // Now check subfolders. Make them if they don't exist.
-        if (!file_exists($this->fullworkdir)) {
-            $this->makedir($this->fullworkdir);
-
-        }
-        if (!file_exists($this->fullarchivedir)) {
-            $this->makedir($this->fullarchivedir);
-        }
-        if (!file_exists($this->fulldiscarddir)) {
-            $this->makedir($this->fulldiscarddir);
-        }
+        $this->checkrequiredsubdir($this->fullworkdir);
+        $this->checkrequiredsubdir($this->fullarchivedir);
+        $this->checkrequiredsubdir($this->fulldiscarddir);
     }
 
     /**

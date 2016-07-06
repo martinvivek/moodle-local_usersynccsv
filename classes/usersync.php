@@ -75,7 +75,7 @@ class local_usersynccsv_usersync
             $field = trim($field);
         }
     }
-    private function dofile($file){
+    private function dofile($file) {
         $linenumber = 1;
         $filehandle = null;
         try {
