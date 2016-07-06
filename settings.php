@@ -51,4 +51,8 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('local_usersynccsv/exportdir',
         get_string('exportdir', 'local_usersynccsv'), get_string('exportdir_help', 'local_usersynccsv'), '', PARAM_TEXT));
     $ADMIN->add('localplugins', $settings);
+
+    // TODO
+    /*        $auths = core_component::get_plugin_list('auth');
+        $enabled = get_string('pluginenabled', 'core_plugin'); */
 }

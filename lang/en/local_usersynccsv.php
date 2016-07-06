@@ -53,3 +53,6 @@ $string['csvescape'] = 'CSV Escape';
 $string['csvescape_help'] = 'The escape parameter sets the escape character (one character only).';
 $string['userkey'] = 'User Key';
 $string['userkey_help'] = 'The field used to uniquely identify a user. By default it\'s idnumber, but could also be email.';
+$string['malformedfilemissingrequiredfield'] = 'Missing required field: {$a}';
+$string['malformedfilemalformedline'] = 'Line number {$a}, numeber of elements differ from header number of elements';
+$string['malformedfilegenericerror'] = 'Line number {$a}';

@@ -39,12 +39,14 @@ class local_usersynccsv_fileman
     public $errormsg = '';
     private static $workdir = 'work';
     private static $archivedir = 'archive';
+    private static $discarddir = 'discard';
 
     private $importdir;
     private $isexport;
     private $exportdir;
     private $fullworkdir;
     private $fullarchivedir;
+    private $fulldiscarddir;
     public function __construct() {
         $config = get_config('local_usersynccsv');
         $this->importdir = $config->importdir;
@@ -52,7 +54,7 @@ class local_usersynccsv_fileman
         $this->exportdir = $config->exportdir;
         $this->fullworkdir = $this->importdir . DIRECTORY_SEPARATOR . self::$workdir;
         $this->fullarchivedir = $this->importdir . DIRECTORY_SEPARATOR . self::$archivedir;
-
+        $this->fulldiscarddir = $this->importdir . DIRECTORY_SEPARATOR . self::$discarddir;
         $this->checkconfigdirs();
     }
 
@@ -93,27 +95,77 @@ class local_usersynccsv_fileman
     }
 
     /**
-     * Move file to working directory
+     * Check for old files in work dir. If there's something there, there was en error.
+     * @return array list of files in work dir. The files are sorted by creation date, ascending. So older first
+     */
+    public function listoldimportfiles() {
+        $files = array();
+        if ($handle = opendir($this->fullworkdir)) {
+            while (false !== ($file = readdir($handle))) {
+                $filefullpath = $this->fullworkdir . DIRECTORY_SEPARATOR . $file;
+                if (!is_dir($filefullpath)) {
+                    $files[filemtime(utf8_decode($filefullpath))] = $filefullpath;
+                }
+            }
+            closedir($handle);
+            // Sort by key, ie creation date.
+            ksort($files);
+        }
+        return $files;
+    }
+
+    /**
+     * Move file to import directory
      * @param string $filefullpath full path of the file to be moved
-     * @return bool true on success
+     * @return string filename
      */
     public function movefiletoworkdir($filefullpath) {
+        $newname = $this->fullworkdir . DIRECTORY_SEPARATOR . basename($filefullpath);
+        rename($filefullpath, $newname);
+        return $newname;
+    }
 
+    /**
+     * Move file to working directory
+     * @param string $filefullpath full path of the file to be moved
+     * @return string filename
+     */
+    public function movefiletoimportdir($filefullpath) {
+        $newname = $this->importdir . DIRECTORY_SEPARATOR . basename($filefullpath);
+        rename($filefullpath, $newname);
+        return $newname;
     }
 
     /**
      * Move file to archive directory
      * @param string $filefullpath full path of the file to be moved
-     * @return bool true on success
+     * @return string filename
      */
     public function movefiletoarchivedir($filefullpath) {
         $archivesubdir = $this->getarchivesubdir();
         if (!file_exists($archivesubdir)) {
             $this->makedir($archivesubdir);
         }
-        rename($filefullpath, $archivesubdir . DIRECTORY_SEPARATOR . basename($filefullpath));
+        $newname = $archivesubdir . DIRECTORY_SEPARATOR . basename($filefullpath);
+        rename($filefullpath, $newname);
+        return $newname;
     }
+    /**
+     * Move file to archive directory
+     * @param string $filefullpath full path of the file to be moved
+     * @return string filename
+     */
+    public function movefiletodiscarddir($filefullpath) {
+        try {
+            $newname = $this->fulldiscarddir . DIRECTORY_SEPARATOR . basename($filefullpath);
+            rename($filefullpath, $newname);
+            return $newname;
+        } catch (Exception $ex) {
+            //TODO report error
+            return '';
+        }
 
+    }
     /**
      * Clean up archive dir, according to configuration params
      * @return bool true on success
@@ -158,6 +210,9 @@ class local_usersynccsv_fileman
         }
         if (!file_exists($this->fullarchivedir)) {
             $this->makedir($this->fullarchivedir);
+        }
+        if (!file_exists($this->fulldiscarddir)) {
+            $this->makedir($this->fulldiscarddir);
         }
     }
 
