@@ -183,7 +183,7 @@ class local_usersynccsv_fileman
         return $this->fullarchivedir . DIRECTORY_SEPARATOR . gmdate("Ymd");
     }
 
-    private function checkconfigdir($configdir){
+    private function checkconfigdir($configdir) {
         if (!file_exists($configdir)) {
             $this->handlefatalerror($configdir.'missing', 'local_usersynccsv', $configdir);
             if (!is_writable($configdir)) {
@@ -197,7 +197,7 @@ class local_usersynccsv_fileman
         }
     }
 
-    private function checkrequiredsubdir($subdir){
+    private function checkrequiredsubdir($subdir) {
         if (!file_exists($subdir)) {
             $this->makedir($subdir);
         }
@@ -207,10 +207,10 @@ class local_usersynccsv_fileman
      */
     private function checkconfigdirs() {
 
-        if (!$this->checkconfigdir($this->importdir)){
+        if (!$this->checkconfigdir($this->importdir)) {
             return;
         }
-        if ($this->isexport && !$this->checkconfigdir($this->exportdir)){
+        if ($this->isexport && !$this->checkconfigdir($this->exportdir)) {
             return;
         }
 
