@@ -52,9 +52,10 @@ if ($hassiteconfig) {
         get_string('exportdir', 'local_usersynccsv'), get_string('exportdir_help', 'local_usersynccsv'), '', PARAM_TEXT));
     $ADMIN->add('localplugins', $settings);
 
-    // TODO
+    // TODO.
     $auths = core_component::get_plugin_list('auth');
     $enabled = get_string('pluginenabled', 'core_plugin');
     $settings->add(new admin_setting_configselect('local_usersynccsv/defaultauth',
-        get_string('defaultauth', 'local_usersynccsv'), get_string('defaultauth_help', 'local_usersynccsv'), $enabled[0] ,$enabled));
+        get_string('defaultauth', 'local_usersynccsv'),
+        get_string('defaultauth_help', 'local_usersynccsv'), $enabled[0] , $enabled));
 }

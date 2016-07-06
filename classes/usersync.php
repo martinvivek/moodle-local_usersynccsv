@@ -75,6 +75,70 @@ class local_usersynccsv_usersync
             $field = trim($field);
         }
     }
+    private function dofile($file){
+        $linenumber = 1;
+        $filehandle = null;
+        try {
+            $filemalformed = false;
+            $file = $this->fm->movefiletoworkdir($file);
+            $filehandle = fopen($file, 'r');
+            $csvheader = fgetcsv($filehandle, null, $this->csvdelimiter, $this->csvenclosure, $this->csvescape);
+            $this->cleanfilerow($csvheader);
+            $csvheader = array_flip($csvheader);
+            $numexpectedfields = count($csvheader);
+            if (!array_key_exists($this->userkey, $csvheader)) {
+                $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
+                    'local_usersynccsv', $this->userkey));
+                fclose($filehandle);
+                $this->fm->movefiletodiscarddir($file);
+                return;
+            }
+            // Check required moodle user fields.
+            foreach ($this->requiredfields as $requiredfield) {
+                if (!array_key_exists($requiredfield, $csvheader)) {
+                    $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
+                        'local_usersynccsv', $requiredfield));
+                    fclose($filehandle);
+                    $this->fm->movefiletodiscarddir($file);
+                    return;
+                }
+            }
+
+            while (!feof($filehandle)) {
+                $csvuser = fgetcsv($filehandle, null, $this->csvdelimiter, $this->csvenclosure, $this->csvescape);
+                if ($csvuser && false !== $csvuser) {
+                    if ($numexpectedfields == count($csvuser)) {
+                        $ret = $this->create_update_user($csvuser, $csvheader);
+                        if (true !== $ret) {
+                            $this->reportmalformeduser($file, get_string('malformedfilegenericerror', 'local_usersynccsv',
+                                    $linenumber) . ' - ' . $ret);
+                            $filemalformed = true;
+                        }
+                    } else {
+                        $this->reportmalformeduser($file, get_string('malformedfilemalformedline', 'local_usersynccsv',
+                            $linenumber));
+                        $filemalformed = true;
+                    }
+
+                }
+                $linenumber++;
+            }
+            fclose($filehandle);
+            // Archive file. Discard if there were errors on user import.
+            if ($filemalformed) {
+                $this->fm->movefiletodiscarddir($file);
+            } else {
+                $this->fm->movefiletoarchivedir($file);
+            }
+        } catch (Exception $ex) {
+            $this->reportmalformeduser($file,
+                get_string('malformedfilegenericerror', 'local_usersynccsv', $linenumber) . ' - ' . $ex->getMessage());
+            if (null !== $filehandle && is_resource($filehandle)) {
+                fclose($filehandle);
+            }
+            $this->fm->movefiletodiscarddir($file);
+        }
+    }
     public function performcheck() {
 
         // Check old files.
@@ -82,71 +146,9 @@ class local_usersynccsv_usersync
 
         // Check for new files.
         $files = $this->fm->listnewimportfiles();
-        $linenumber = 1;
-        $filehandle = null;
+
         foreach ($files as $file) {
-            try {
-                $filemalformed = false;
-                $file = $this->fm->movefiletoworkdir($file);
-                $filehandle = fopen($file, 'r');
-                $csvheader = fgetcsv($filehandle, null, $this->csvdelimiter, $this->csvenclosure, $this->csvescape);
-                $this->cleanfilerow($csvheader);
-                $csvheader = array_flip($csvheader);
-                $numexpectedfields = count($csvheader);
-                if (!array_key_exists($this->userkey, $csvheader)) {
-                    $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
-                        'local_usersynccsv', $this->userkey));
-                    fclose($filehandle);
-                    $this->fm->movefiletodiscarddir($file);
-                    continue;
-                }
-                // Check required moodle user fields.
-                foreach ($this->requiredfields as $requiredfield) {
-                    if (!array_key_exists($requiredfield, $csvheader)) {
-                        $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
-                            'local_usersynccsv', $requiredfield));
-                        fclose($filehandle);
-                        $this->fm->movefiletodiscarddir($file);
-                        $filemalformed = true;
-                        continue;
-                    }
-                }
-                if ($filemalformed) continue;
-
-                while (!feof($filehandle)) {
-                    $csvuser = fgetcsv($filehandle, null, $this->csvdelimiter, $this->csvenclosure, $this->csvescape);
-                    if ($csvuser && false !== $csvuser) {
-                        if ($numexpectedfields == count($csvuser)) {
-                            $ret = $this->create_update_user($csvuser, $csvheader);
-                            if (true !== $ret) {
-                                $this->reportmalformeduser($file, get_string('malformedfilegenericerror', 'local_usersynccsv',
-                                        $linenumber) . ' - ' . $ret);
-                                $filemalformed = true;
-                            }
-                        } else {
-                            $this->reportmalformeduser($file, get_string('malformedfilemalformedline', 'local_usersynccsv',
-                                $linenumber));
-                            $filemalformed = true;
-                        }
-
-                    }
-                    $linenumber++;
-                }
-                fclose($filehandle);
-                // Archive file. Discard if there were errors on user import.
-                if ($filemalformed) {
-                    $this->fm->movefiletodiscarddir($file);
-                }else {
-                    $this->fm->movefiletoarchivedir($file);
-                }
-            } catch (Exception $ex) {
-                $this->reportmalformeduser($file,
-                    get_string('malformedfilegenericerror', 'local_usersynccsv', $linenumber) . ' - ' . $ex->getMessage());
-                if (null !== $filehandle && is_resource($filehandle)) {
-                    fclose($filehandle);
-                }
-                $this->fm->movefiletodiscarddir($file);
-            }
+            $this->dofile($file);
         }
     }
 
