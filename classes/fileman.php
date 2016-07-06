@@ -161,7 +161,7 @@ class local_usersynccsv_fileman
             rename($filefullpath, $newname);
             return $newname;
         } catch (Exception $ex) {
-            //TODO report error
+            // TODO report error.
             return '';
         }
 
