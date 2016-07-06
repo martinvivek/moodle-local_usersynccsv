@@ -75,6 +75,43 @@ class local_usersynccsv_usersync
             $field = trim($field);
         }
     }
+    private function checkmalformedfile($file, $filehandle, $csvheader) {
+        if (!array_key_exists($this->userkey, $csvheader)) {
+            $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
+                'local_usersynccsv', $this->userkey));
+            fclose($filehandle);
+            $this->fm->movefiletodiscarddir($file);
+            return false;
+        }
+        // Check required moodle user fields.
+        foreach ($this->requiredfields as $requiredfield) {
+            if (!array_key_exists($requiredfield, $csvheader)) {
+                $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
+                    'local_usersynccsv', $requiredfield));
+                fclose($filehandle);
+                $this->fm->movefiletodiscarddir($file);
+                return false;
+            }
+        }
+        return true;
+    }
+    private function checkmalformeduser($file, $linenumber, $csvuser, $numexpectedfields, $csvheader, &$filemalformed) {
+        if ($csvuser && false !== $csvuser) {
+            if ($numexpectedfields == count($csvuser)) {
+                $ret = $this->create_update_user($csvuser, $csvheader);
+                if (true !== $ret) {
+                    $this->reportmalformeduser($file, get_string('malformedfilegenericerror', 'local_usersynccsv',
+                            $linenumber) . ' - ' . $ret);
+                    $filemalformed = true;
+                }
+            } else {
+                $this->reportmalformeduser($file, get_string('malformedfilemalformedline', 'local_usersynccsv',
+                    $linenumber));
+                $filemalformed = true;
+            }
+
+        }
+    }
     private function dofile($file) {
         $linenumber = 1;
         $filehandle = null;
@@ -86,41 +123,14 @@ class local_usersynccsv_usersync
             $this->cleanfilerow($csvheader);
             $csvheader = array_flip($csvheader);
             $numexpectedfields = count($csvheader);
-            if (!array_key_exists($this->userkey, $csvheader)) {
-                $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
-                    'local_usersynccsv', $this->userkey));
-                fclose($filehandle);
-                $this->fm->movefiletodiscarddir($file);
+
+            if (!$this->checkmalformedfile($file, $filehandle, $csvheader)) {
                 return;
-            }
-            // Check required moodle user fields.
-            foreach ($this->requiredfields as $requiredfield) {
-                if (!array_key_exists($requiredfield, $csvheader)) {
-                    $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
-                        'local_usersynccsv', $requiredfield));
-                    fclose($filehandle);
-                    $this->fm->movefiletodiscarddir($file);
-                    return;
-                }
             }
 
             while (!feof($filehandle)) {
                 $csvuser = fgetcsv($filehandle, null, $this->csvdelimiter, $this->csvenclosure, $this->csvescape);
-                if ($csvuser && false !== $csvuser) {
-                    if ($numexpectedfields == count($csvuser)) {
-                        $ret = $this->create_update_user($csvuser, $csvheader);
-                        if (true !== $ret) {
-                            $this->reportmalformeduser($file, get_string('malformedfilegenericerror', 'local_usersynccsv',
-                                    $linenumber) . ' - ' . $ret);
-                            $filemalformed = true;
-                        }
-                    } else {
-                        $this->reportmalformeduser($file, get_string('malformedfilemalformedline', 'local_usersynccsv',
-                            $linenumber));
-                        $filemalformed = true;
-                    }
-
-                }
+                $this->checkmalformeduser($file, $linenumber, $csvuser, $numexpectedfields, $csvheader, $filemalformed);
                 $linenumber++;
             }
             fclose($filehandle);
