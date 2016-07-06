@@ -53,6 +53,8 @@ if ($hassiteconfig) {
     $ADMIN->add('localplugins', $settings);
 
     // TODO
-    /*        $auths = core_component::get_plugin_list('auth');
-        $enabled = get_string('pluginenabled', 'core_plugin'); */
+    $auths = core_component::get_plugin_list('auth');
+    $enabled = get_string('pluginenabled', 'core_plugin');
+    $settings->add(new admin_setting_configselect('local_usersynccsv/defaultauth',
+        get_string('defaultauth', 'local_usersynccsv'), get_string('defaultauth_help', 'local_usersynccsv'), $enabled[0] ,$enabled));
 }

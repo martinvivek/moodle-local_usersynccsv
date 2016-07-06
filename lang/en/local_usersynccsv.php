@@ -56,3 +56,5 @@ $string['userkey_help'] = 'The field used to uniquely identify a user. By defaul
 $string['malformedfilemissingrequiredfield'] = 'Missing required field: {$a}';
 $string['malformedfilemalformedline'] = 'Line number {$a}, numeber of elements differ from header number of elements';
 $string['malformedfilegenericerror'] = 'Line number {$a}';
+$string['defaultauth'] = 'User Default Auth Type';
+$string['defaultauth_help'] = 'Used if not found in import file';

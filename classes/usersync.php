@@ -101,7 +101,7 @@ class local_usersynccsv_usersync
                     continue;
                 }
                 // Check required moodle user fields.
-                foreach ($this->requiredfields as $requiredfield){
+                foreach ($this->requiredfields as $requiredfield) {
                     if (!array_key_exists($requiredfield, $csvheader)) {
                         $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
                             'local_usersynccsv', $requiredfield));
@@ -119,11 +119,13 @@ class local_usersynccsv_usersync
                         if ($numexpectedfields == count($csvuser)) {
                             $ret = $this->create_update_user($csvuser, $csvheader);
                             if (true !== $ret) {
-                                $this->reportmalformeduser($file, get_string('malformedfilegenericerror', 'local_usersynccsv', $linenumber) . ' - ' . $ret);
+                                $this->reportmalformeduser($file, get_string('malformedfilegenericerror', 'local_usersynccsv',
+                                        $linenumber) . ' - ' . $ret);
                                 $filemalformed = true;
                             }
-                        }else {
-                            $this->reportmalformeduser($file, get_string('malformedfilemalformedline', 'local_usersynccsv', $linenumber));
+                        } else {
+                            $this->reportmalformeduser($file, get_string('malformedfilemalformedline', 'local_usersynccsv',
+                                $linenumber));
                             $filemalformed = true;
                         }
 
@@ -131,23 +133,21 @@ class local_usersynccsv_usersync
                     $linenumber++;
                 }
                 fclose($filehandle);
-                // Archive file. Discard if there were errors on user import
+                // Archive file. Discard if there were errors on user import.
                 if ($filemalformed) {
                     $this->fm->movefiletodiscarddir($file);
-                }else{
+                }else {
                     $this->fm->movefiletoarchivedir($file);
                 }
-            }catch (Exception $ex) {
-                $this->reportmalformeduser($file, get_string('malformedfilegenericerror', 'local_usersynccsv', $linenumber) . ' - ' . $ex->getMessage());
+            } catch (Exception $ex) {
+                $this->reportmalformeduser($file,
+                    get_string('malformedfilegenericerror', 'local_usersynccsv', $linenumber) . ' - ' . $ex->getMessage());
                 if (null !== $filehandle && is_resource($filehandle)) {
                     fclose($filehandle);
                 }
                 $this->fm->movefiletodiscarddir($file);
             }
-
-
         }
-
     }
 
     /**
@@ -200,7 +200,7 @@ class local_usersynccsv_usersync
                 }
             }
             return true;
-        } catch (Exception $ex){
+        } catch (Exception $ex) {
             return $ex->getMessage();
         }
 
