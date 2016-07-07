@@ -57,4 +57,6 @@ $string['malformedfilemissingrequiredfield'] = 'Missing required field: {$a}';
 $string['malformedfilemalformedline'] = 'Line number {$a}, numeber of elements differ from header number of elements';
 $string['malformedfilegenericerror'] = 'Line number {$a}';
 $string['defaultauth'] = 'User Default Auth Type';
-$string['defaultauth_help'] = 'Used if not found in import file';
+$string['defaultauth_help'] = 'Used if auth field is not found in import file';
+$string['requiredfields'] = 'Required Fields List';
+$string['requiredfields_help'] = 'CSV List fo required fields. If one of theese is not found in the import file header, the entire import file will be discarded. Default is blank, meaning that no required fields are provided, besides the Moodle required user fields: username , firstname, lastname, email, and of course the import key';

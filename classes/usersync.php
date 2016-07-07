@@ -36,9 +36,14 @@ defined('MOODLE_INTERNAL') || die();
 class local_usersynccsv_usersync
 {
     /**
-     * @var array
+     * @var array Moodle required User fields
      */
     private $requiredfields = ['username' , 'firstname', 'lastname', 'email'];
+
+    /**
+     * @var array custom user defined required fields
+     */
+    private $customrequiredfields;
     /**
      * @var local_usersynccsv_fileman
      */
@@ -56,6 +61,7 @@ class local_usersynccsv_usersync
         $this->csvdelimiter = $config->csvdelimiter;
         $this->csvenclosure = $config->csvenclosure;
         $this->csvescape = $config->csvescape;
+        $this->customrequiredfields = $config->requiredfields;
     }
 
     private function reportmalformedfile($filefullpath, $reason) {
@@ -85,6 +91,15 @@ class local_usersynccsv_usersync
         }
         // Check required moodle user fields.
         foreach ($this->requiredfields as $requiredfield) {
+            if (!array_key_exists($requiredfield, $csvheader)) {
+                $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
+                    'local_usersynccsv', $requiredfield));
+                fclose($filehandle);
+                $this->fm->movefiletodiscarddir($file);
+                return false;
+            }
+        }
+        foreach ($this->customrequiredfields as $requiredfield) {
             if (!array_key_exists($requiredfield, $csvheader)) {
                 $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
                     'local_usersynccsv', $requiredfield));
