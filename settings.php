@@ -53,7 +53,7 @@ if ($hassiteconfig) {
     $ADMIN->add('localplugins', $settings);
 
     $auths = core_component::get_plugin_list('auth');
-    if (array_key_exists('manual',$auths)) {
+    if (array_key_exists('manual', $auths)) {
         $def = 'manual';
     } else {
         $def = array_values($auths)[0];
