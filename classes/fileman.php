@@ -37,10 +37,11 @@ class local_usersynccsv_fileman
 {
     public $iserror = false;
     public $errormsg = '';
+    private static $archivesubdirformat = 'Ymd';
     private static $workdir = 'work';
     private static $archivedir = 'archive';
     private static $discarddir = 'discard';
-
+    private $archiveretentionmaxdays;
     private $importdir;
     private $isexport;
     private $exportdir;
@@ -52,6 +53,7 @@ class local_usersynccsv_fileman
         $this->importdir = $config->importdir;
         $this->isexport = $config->isexport;
         $this->exportdir = $config->exportdir;
+        $this->archiveretentionmaxdays = $config->archivedirmaxday;
         $this->fullworkdir = $this->importdir . DIRECTORY_SEPARATOR . self::$workdir;
         $this->fullarchivedir = $this->importdir . DIRECTORY_SEPARATOR . self::$archivedir;
         $this->fulldiscarddir = $this->importdir . DIRECTORY_SEPARATOR . self::$discarddir;
@@ -171,16 +173,56 @@ class local_usersynccsv_fileman
      * @return bool true on success
      */
     public function cleanuparchivedir() {
+        $dirs = array();
+        if ($handle = opendir($this->fullarchivedir)) {
+            while (false !== ($dir = readdir($handle))) {
+                if ($dir != '.' && $dir != '..' && is_dir($this->fullarchivedir .  DIRECTORY_SEPARATOR . $dir)) {
+                    $dirs[$dir] = $dir;
+                }
+            }
+            closedir($handle);
+            // Sort by key, ie creation date.
+            ksort($dirs);
+        }
 
+        $today = new DateTime();
+        foreach ($dirs as $dir) {
+            $dirdate = DateTime::createFromFormat(self::$archivesubdirformat . 'His', $dir.'000000');
+            if ($today->diff($dirdate)->days > $this->archiveretentionmaxdays) {
+                $this->removedir($dir);
+            }
+        }
     }
 
+    private function removedir($dir) {
+        if (!file_exists($dir)) {
+            return true;
+        }
+
+        if (!is_dir($dir)) {
+            return unlink($dir);
+        }
+
+        foreach (scandir($dir) as $item) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+
+            if (!$this->removedir($dir . DIRECTORY_SEPARATOR . $item)) {
+                return false;
+            }
+
+        }
+
+        return rmdir($dir);
+    }
     /**
      * Get archivedir full name, according to the current date
      * @return string archive sub dir full path
      */
     private function getarchivesubdir() {
         // We get the archive dir according to the current date.
-        return $this->fullarchivedir . DIRECTORY_SEPARATOR . gmdate("Ymd");
+        return $this->fullarchivedir . DIRECTORY_SEPARATOR . gmdate(self::$archivesubdirformat);
     }
 
     private function checkconfigdir($configdir) {

@@ -41,7 +41,7 @@ if ($hassiteconfig) {
         get_string('importdir', 'local_usersynccsv'), get_string('importdir_help', 'local_usersynccsv'), '', PARAM_TEXT));
     $settings->add(new admin_setting_configtext('local_usersynccsv/archivedirmaxday',
         get_string('archivedirmaxday', 'local_usersynccsv'), get_string('archivedirmaxday_help',
-            'local_usersynccsv'), '', PARAM_INT));
+            'local_usersynccsv'), 10, PARAM_INT));
     $settings->add(new admin_setting_configtext('local_usersynccsv/archivedirmaxsize',
         get_string('archivedirmaxsize', 'local_usersynccsv'), get_string('archivedirmaxsize_help',
             'local_usersynccsv'), '', PARAM_INT));

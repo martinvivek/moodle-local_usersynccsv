@@ -61,7 +61,7 @@ class local_usersynccsv_usersync
         $this->csvdelimiter = $config->csvdelimiter;
         $this->csvenclosure = $config->csvenclosure;
         $this->csvescape = $config->csvescape;
-        $this->customrequiredfields = $config->requiredfields;
+        $this->customrequiredfields = explode(',', $config->requiredfields);
     }
 
     private function reportmalformedfile($filefullpath, $reason) {
@@ -175,6 +175,8 @@ class local_usersynccsv_usersync
         foreach ($files as $file) {
             $this->dofile($file);
         }
+
+        $this->fm->cleanuparchivedir();
     }
 
     /**
