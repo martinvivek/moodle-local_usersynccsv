@@ -189,7 +189,7 @@ class local_usersynccsv_fileman
         foreach ($dirs as $dir) {
             $dirdate = DateTime::createFromFormat(self::$archivesubdirformat . 'His', $dir.'000000');
             if ($today->diff($dirdate)->days > $this->archiveretentionmaxdays) {
-                $this->removedir($dir);
+                $this->removedir($this->fullarchivedir .  DIRECTORY_SEPARATOR . $dir);
             }
         }
     }
