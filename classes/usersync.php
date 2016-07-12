@@ -168,7 +168,8 @@ class local_usersynccsv_usersync
      * @param bool $filemalformed  true if file is malformed
      * @throws coding_exception
      */
-    private function checkmalformeduser(string $file, int $linenumber, array $csvuser, int $numexpectedfields, array $csvheader, bool &$filemalformed) {
+    private function checkmalformeduser(string $file, int $linenumber, array $csvuser,
+                                        int $numexpectedfields, array $csvheader, bool &$filemalformed) {
         if ($csvuser && false !== $csvuser) {
             if ($numexpectedfields == count($csvuser)) {
                 $ret = $this->create_update_user($csvuser, $csvheader);
