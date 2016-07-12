@@ -46,28 +46,39 @@ class local_usersynccsv_dbfileman
     const DELETEDFS = 4;
 
     /**
+     * @var int id of the file we are currently working on. Used for logging
+     */
+    public static $currentfileid;
+    /**
      * Register file in db, create if not exists, update if exists
      * @param string $filename file absolute name
      * @param int $filestatus file status: 0:to import, 1:work, 2:archived, 3: discarded, 4:deleted from fs
      */
-    public static function registerfile($filename, $filestatus) {
+    public static function registerfile($filename, $filestatus, $archivesubdir='') {
         global $DB;
         $file = $DB->get_record('local_usersynccsv_file',array('name' => $filename));
         $now = time();
         if ($file) {
             $file->status = $filestatus;
-            $file->timeupdated = $now;
+            $file->timemodified = $now;
+            $file->archivesubdir = $archivesubdir;
             $DB->update_record('local_usersynccsv_file', $file);
         } else {
             $file = new stdClass();
             $file->name = $filename;
             $file->status = $filestatus;
             $file->timecreated = $now;
-            $file->timeupdated = $now;
+            $file->timemodified = $now;
+            $file->archivesubdir = $archivesubdir;
             $DB->insert_record('local_usersynccsv_file', $file);
         }
+        self::$currentfileid = $file->id ;
     }
 
+    public static function getfilefromid($fileid) {
+        global $DB;
+        return $DB->get_record('local_usersynccsv_file', array('id' => $fileid));
+    }
     /**
      * Clean up old records in file table
      */
@@ -77,6 +88,6 @@ class local_usersynccsv_dbfileman
         $maxday = $config->dbfiletablemaxday;
         $mindaytime = time();
         $mindaytime -= $maxday*86400;
-        $DB->delete_records('local_usersynccsv_file', array('timecreated' < $mindaytime));
+        $DB->delete_records_select('local_usersynccsv_file', 'timecreated < ? ', array($mindaytime));
     }
 }

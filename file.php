@@ -15,42 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
- * User Sync CSV.
+ * Show files
  *
  * @package   local_usersynccsv
  * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once('../../config.php');
 
-defined('MOODLE_INTERNAL') || die();
+$id = required_param('id', PARAM_INT);
 
-/**
- * CSV Field
- *
- * @package    local_usersynccsv
- * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class local_usersynccsv_logger
-{
+require_login();
 
-    public static function logdofile( $msg = ''){
+$context = context_system::instance();
 
-        $event = \local_usersynccsv\event\synccsv_dofile::create(array(
-            'objectid' => local_usersynccsv_dbfileman::$currentfileid,
-            'other' => $msg,
-        ));
-        $event->trigger();
-    }
+require_capability('local/usersynccsv:viewfile', $context);
 
-    public static function logerror( $msg = ''){
+$fm = new local_usersynccsv_fileman();
+$filefullpath = $fm->getfilefullpathfromid($id);
 
-        $event = \local_usersynccsv\event\synccsv_error::create(array(
-            'objectid' => local_usersynccsv_dbfileman::$currentfileid,
-            'other' => $msg,
-        ));
-        $event->trigger();
-    }
+if (file_exists($filefullpath)) {
+    echo "<pre>";
+    readfile($filefullpath);
+    echo "</pre>";
+} else {
+    echo 'Error file not found';
 }

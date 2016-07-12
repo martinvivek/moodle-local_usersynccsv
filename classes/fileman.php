@@ -124,14 +124,6 @@ class local_usersynccsv_fileman
     }
 
     /**
-     * get import dir full path
-     * @return string import dir full path
-     */
-    public function getimportdir() {
-        return $this->importdir;
-    }
-
-    /**
      * Old syntax of class constructor. Deprecated in PHP7.
      *
      * @deprecated since Moodle 3.1
@@ -234,7 +226,7 @@ class local_usersynccsv_fileman
             $basename = basename($filefullpath);
             $newname = $this->fulldiscarddir . DIRECTORY_SEPARATOR . $basename;
             rename($filefullpath, $newname);
-            local_usersynccsv_dbfileman::registerfile($basename,local_usersynccsv_dbfileman::ARCHIVED);
+            local_usersynccsv_dbfileman::registerfile($basename,local_usersynccsv_dbfileman::DISCARDED);
             return $newname;
         } catch (Exception $ex) {
             // TODO report error.
@@ -376,6 +368,28 @@ class local_usersynccsv_fileman
     private function handlefatalerror($smgconst, $component, $a = null) {
         $this->errormsg = get_string($smgconst, $component, $a);
         $this->iserror = true;
+    }
+
+    public function getfilefullpathfromid($fileid) {
+        $file = local_usersynccsv_dbfileman::getfilefromid($fileid);
+        switch ($file->status) {
+            case local_usersynccsv_dbfileman::TOIMPORT:
+                $filefullpath = $this->importdir . DIRECTORY_SEPARATOR . $file->name;
+                break;
+            case local_usersynccsv_dbfileman::WORKING:
+                $filefullpath = $this->fullworkdir  . DIRECTORY_SEPARATOR . $file->name;
+                break;
+            case local_usersynccsv_dbfileman::DISCARDED:
+                $filefullpath = $this->fulldiscarddir . DIRECTORY_SEPARATOR . $file->name;
+                break;
+            case local_usersynccsv_dbfileman::ARCHIVED:
+                $filefullpath = $this->fullarchivedir . DIRECTORY_SEPARATOR . $file->archivesubdir . DIRECTORY_SEPARATOR . $file->name;
+                break;
+            default:
+                $filefullpath = '';
+                break;
+        }
+        return $filefullpath;
     }
 
 }

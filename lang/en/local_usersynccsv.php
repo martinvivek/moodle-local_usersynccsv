@@ -61,8 +61,10 @@ $string['defaultauth_help'] = 'Used if auth field is not found in import file';
 $string['requiredfields'] = 'Required Fields List';
 $string['requiredfields_help'] = 'CSV List fo required fields. If one of theese is not found in the import file header, the entire import file will be discarded. Default is blank, meaning that no required fields are provided, besides the Moodle required user fields: username , firstname, lastname, email, and of course the import key';
 $string['malformedfilefoundunknownfield'] = 'Unknown field found: {$a}';
-$string['eventsynccsvevent'] = 'Sync CSV';
+$string['synccsv_dofile-event'] = 'Sync CSV File processed';
+$string['synccsv_error-event'] = 'Sync CSV File error';
 $string['dbfiletablemaxday'] = 'File Table Retention Days';
 $string['dbfiletablemaxday_help'] = 'Max retention days of file table, i.e. the table where we store file status';
+$string['synccsveeventdescription'] = 'The file with id';
 
 

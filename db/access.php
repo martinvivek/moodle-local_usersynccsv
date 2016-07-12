@@ -15,34 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The EVENTNAME event.
+ * Show files
  *
- * @package    local_usersynccsv
+ * @package   local_usersynccsv
  * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace local_usersynccsv\event;
-defined('MOODLE_INTERNAL') || die();
-/**
- * The local_usersynccsv event class.
- *
- *
- * @since     Moodle MOODLEVERSION
- * @copyright 2014 YOUR NAME
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- **/
-class synccsvevent extends \core\event\base {
-    protected function init() {
-        $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = 'local_usersynccsv_file';
-        $this->data['context'] = \context_system::instance();
-    }
 
-    public static function get_name() {
-        return get_string('eventsynccsvevent', 'local_usersynccsv');
-    }
+$capabilities = array(
 
-    public function get_description() {
-        return "The file with id {$this->objectid} crud {$this->crud} message {$this->other}.";
-    }
-}
+    'local/usersynccsv:viewfile' => array(
+
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    )
+);
+
