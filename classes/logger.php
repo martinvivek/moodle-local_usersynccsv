@@ -36,11 +36,12 @@ defined('MOODLE_INTERNAL') || die();
 class local_usersynccsv_logger
 {
 
-    public static function log($fileid, $msg){
+    public static function log($fileid, $msg, $crud){
 
         $event = \local_usersynccsv\event\synccsvevent::create(array(
             'objectid' => $fileid,
             'other' => $msg,
+            'crud' => $crud // c(reate), r(ead), u(pdate), d(elete)
         ));
         $event->trigger();
     }

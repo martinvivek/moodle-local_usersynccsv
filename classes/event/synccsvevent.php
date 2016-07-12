@@ -33,7 +33,6 @@ defined('MOODLE_INTERNAL') || die();
  **/
 class synccsvevent extends \core\event\base {
     protected function init() {
-        $this->data['crud'] = 'c'; // c(reate), r(ead), u(pdate), d(elete)
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'local_usersynccsv_file';
         $this->data['context'] = \context_system::instance();
@@ -44,10 +43,6 @@ class synccsvevent extends \core\event\base {
     }
 
     public function get_description() {
-        return "The user with id {$this->userid} created ... ... ... with id {$this->objectid}.";
-    }
-
-    public function get_url() {
-        return new \moodle_url('....', array('parameter' => 'value'));
+        return "The file with id {$this->objectid} crud {$this->crud} message {$this->other}.";
     }
 }
