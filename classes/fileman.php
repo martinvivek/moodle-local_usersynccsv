@@ -357,7 +357,7 @@ class local_usersynccsv_fileman
      * @param string $a optional $smgconst parameter
      * @throws coding_exception
      */
-    private function handlefatalerror(string $smgconst, string $component='local_usersynccsv', string $a=null) {
+    private function handlefatalerror(string $smgconst, string $component, string $a = null) {
         $this->errormsg = get_string($smgconst, $component, $a);
         $this->iserror = true;
     }
