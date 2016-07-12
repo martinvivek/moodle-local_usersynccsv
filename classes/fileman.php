@@ -185,7 +185,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return string filename
      */
-    public function movefiletoworkdir(string $filefullpath) {
+    public function movefiletoworkdir($filefullpath) {
         $newname = $this->fullworkdir . DIRECTORY_SEPARATOR . basename($filefullpath);
         rename($filefullpath, $newname);
         return $newname;
@@ -196,7 +196,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return string filename
      */
-    public function movefiletoimportdir(string $filefullpath) {
+    public function movefiletoimportdir($filefullpath) {
         $newname = $this->importdir . DIRECTORY_SEPARATOR . basename($filefullpath);
         rename($filefullpath, $newname);
         return $newname;
@@ -207,7 +207,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return string filename
      */
-    public function movefiletoarchivedir(string $filefullpath) {
+    public function movefiletoarchivedir($filefullpath) {
         $archivesubdir = $this->getarchivesubdir();
         if (!file_exists($archivesubdir)) {
             $this->makedir($archivesubdir);
@@ -221,7 +221,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return string filename
      */
-    public function movefiletodiscarddir(string $filefullpath) {
+    public function movefiletodiscarddir($filefullpath) {
         try {
             $newname = $this->fulldiscarddir . DIRECTORY_SEPARATOR . basename($filefullpath);
             rename($filefullpath, $newname);
@@ -262,7 +262,7 @@ class local_usersynccsv_fileman
      * @param string $dir dir to be removed
      * @return bool true if ok, false otherwise
      */
-    private function removedir(string $dir) {
+    private function removedir($dir) {
         if (!file_exists($dir)) {
             return true;
         }
@@ -299,7 +299,7 @@ class local_usersynccsv_fileman
      * @param string $configdir dir to be checked
      * @return bool true if dir exists and is writable
      */
-    private function checkconfigdir(string $configdir) {
+    private function checkconfigdir($configdir) {
         if (!file_exists($configdir)) {
             $this->handlefatalerror($configdir.'missing', 'local_usersynccsv', $configdir);
             if (!is_writable($configdir)) {
@@ -317,7 +317,7 @@ class local_usersynccsv_fileman
      * check if subdir exists. If not, create it
      * @param string $subdir dir to be checked
      */
-    private function checkrequiredsubdir(string $subdir) {
+    private function checkrequiredsubdir($subdir) {
         if (!file_exists($subdir)) {
             $this->makedir($subdir);
         }
@@ -357,7 +357,7 @@ class local_usersynccsv_fileman
      * @param string $a optional $smgconst parameter
      * @throws coding_exception
      */
-    private function handlefatalerror(string $smgconst, string $component, string $a = null) {
+    private function handlefatalerror($smgconst, $component, $a = null) {
         $this->errormsg = get_string($smgconst, $component, $a);
         $this->iserror = true;
     }
