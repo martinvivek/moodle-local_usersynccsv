@@ -29,25 +29,80 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * File and directory manager
  *
- * @package    local_usersynccs
+ * @package    local_usersynccsv
  * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_usersynccsv_fileman
 {
+    /**
+     * @var bool true if any error occurred during execution
+     */
     public $iserror = false;
+
+    /**
+     * @var string detailed error message
+     */
     public $errormsg = '';
+
+    /**
+     * @var string format of archive subdirectory eg 20160721
+     */
     private static $archivesubdirformat = 'Ymd';
+
+    /**
+     * @var string name of work subdir
+     */
     private static $workdir = 'work';
+
+    /**
+     * @var string name of archive subdir
+     */
     private static $archivedir = 'archive';
+
+    /**
+     * @var string name of discrd subdir
+     */
     private static $discarddir = 'discard';
+
+    /**
+     * @var int num days archive sub dir will be kept
+     */
     private $archiveretentionmaxdays;
+
+    /**
+     * @var string import dir full path
+     */
     private $importdir;
+
+    /**
+     * @var bool true if tables incremental export is also enabled
+     */
     private $isexport;
+
+    /**
+     * @var string export dir full path
+     */
     private $exportdir;
+
+    /**
+     * @var string work dir full path
+     */
     private $fullworkdir;
+
+    /**
+     * @var string archive dir full path
+     */
     private $fullarchivedir;
+
+    /**
+     * @var string discard dir full path
+     */
     private $fulldiscarddir;
+
+    /**
+     * local_usersynccsv_fileman constructor.
+     */
     public function __construct() {
         $config = get_config('local_usersynccsv');
         $this->importdir = $config->importdir;
@@ -60,13 +115,22 @@ class local_usersynccsv_fileman
         $this->checkconfigdirs();
     }
 
-
+    /**
+     * get archive dir full path
+     * @return string full archive dir path
+     */
     public function getfullarchivedir() {
         return $this->fullarchivedir;
     }
+
+    /**
+     * get import dir full path
+     * @return string import dir full path
+     */
     public function getimportdir() {
         return $this->importdir;
     }
+
     /**
      * Old syntax of class constructor. Deprecated in PHP7.
      *
@@ -121,7 +185,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return string filename
      */
-    public function movefiletoworkdir($filefullpath) {
+    public function movefiletoworkdir(string $filefullpath) {
         $newname = $this->fullworkdir . DIRECTORY_SEPARATOR . basename($filefullpath);
         rename($filefullpath, $newname);
         return $newname;
@@ -132,7 +196,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return string filename
      */
-    public function movefiletoimportdir($filefullpath) {
+    public function movefiletoimportdir(string $filefullpath) {
         $newname = $this->importdir . DIRECTORY_SEPARATOR . basename($filefullpath);
         rename($filefullpath, $newname);
         return $newname;
@@ -143,7 +207,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return string filename
      */
-    public function movefiletoarchivedir($filefullpath) {
+    public function movefiletoarchivedir(string $filefullpath) {
         $archivesubdir = $this->getarchivesubdir();
         if (!file_exists($archivesubdir)) {
             $this->makedir($archivesubdir);
@@ -157,7 +221,7 @@ class local_usersynccsv_fileman
      * @param string $filefullpath full path of the file to be moved
      * @return string filename
      */
-    public function movefiletodiscarddir($filefullpath) {
+    public function movefiletodiscarddir(string $filefullpath) {
         try {
             $newname = $this->fulldiscarddir . DIRECTORY_SEPARATOR . basename($filefullpath);
             rename($filefullpath, $newname);
@@ -181,8 +245,7 @@ class local_usersynccsv_fileman
                 }
             }
             closedir($handle);
-            // Sort by key, ie creation date.
-            ksort($dirs);
+
         }
 
         $today = new DateTime();
@@ -194,7 +257,12 @@ class local_usersynccsv_fileman
         }
     }
 
-    private function removedir($dir) {
+    /**
+     * remove dir
+     * @param string $dir dir to be removed
+     * @return bool true if ok, false otherwise
+     */
+    private function removedir(string $dir) {
         if (!file_exists($dir)) {
             return true;
         }
@@ -216,6 +284,7 @@ class local_usersynccsv_fileman
 
         return rmdir($dir);
     }
+
     /**
      * Get archivedir full name, according to the current date
      * @return string archive sub dir full path
@@ -225,7 +294,12 @@ class local_usersynccsv_fileman
         return $this->fullarchivedir . DIRECTORY_SEPARATOR . gmdate(self::$archivesubdirformat);
     }
 
-    private function checkconfigdir($configdir) {
+    /**
+     * check that config dir exists and is writable
+     * @param string $configdir dir to be checked
+     * @return bool true if dir exists and is writable
+     */
+    private function checkconfigdir(string $configdir) {
         if (!file_exists($configdir)) {
             $this->handlefatalerror($configdir.'missing', 'local_usersynccsv', $configdir);
             if (!is_writable($configdir)) {
@@ -239,7 +313,11 @@ class local_usersynccsv_fileman
         }
     }
 
-    private function checkrequiredsubdir($subdir) {
+    /**
+     * check if subdir exists. If not, create it
+     * @param string $subdir dir to be checked
+     */
+    private function checkrequiredsubdir(string $subdir) {
         if (!file_exists($subdir)) {
             $this->makedir($subdir);
         }
@@ -263,7 +341,7 @@ class local_usersynccsv_fileman
     }
 
     /**
-     * TODO
+     * TODO check for dir permissions
      * @param string $dirfullpath
      */
     private function makedir($dirfullpath) {
@@ -272,13 +350,14 @@ class local_usersynccsv_fileman
         @mkdir($dirfullpath, $CFG->directorypermissions, false);
     }
     /**
-     * TODO
+     * handle fatal error
+     * TODO what shall we do in case of fatal error?
      * @param string $smgconst to be resolved with get_string
-     * @param string $file defaults to local_usersynccsv
+     * @param string $component defaults to local_usersynccsv
      * @param string $a optional $smgconst parameter
      * @throws coding_exception
      */
-    private function handlefatalerror($smgconst, $component='local_usersynccsv', $a=null) {
+    private function handlefatalerror(string $smgconst, string $component='local_usersynccsv', string $a=null) {
         $this->errormsg = get_string($smgconst, $component, $a);
         $this->iserror = true;
     }

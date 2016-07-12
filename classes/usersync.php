@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * File and directory manager
  *
- * @package    local_usersynccs
+ * @package    local_usersynccsv
  * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -49,11 +49,29 @@ class local_usersynccsv_usersync
      */
     private $fm;
 
+    /**
+     * @var string key used to uniquely identify user in moodle
+     */
     private $userkey;
+
+    /**
+     * @var string character used as csv delimiter
+     */
     private $csvdelimiter;
+
+    /**
+     * @var string character used as csv enclosure
+     */
     private $csvenclosure;
+
+    /**
+     * @var string character used as csv escape
+     */
     private $csvescape;
 
+    /**
+     * local_usersynccsv_usersync constructor.
+     */
     public function __construct() {
         $this->fm = new local_usersynccsv_fileman();
         $config = get_config('local_usersynccsv');
@@ -64,24 +82,53 @@ class local_usersynccsv_usersync
         $this->customrequiredfields = explode(',', $config->requiredfields);
     }
 
-    private function reportmalformedfile($filefullpath, $reason) {
+    /**
+     * Writes log for malformed file.
+     * @param string $filefullpath malformed file
+     * @param string $reason reason why the file was malformed
+     */
+    private function reportmalformedfile(string $filefullpath, string $reason) {
         echo '<div>'.$filefullpath . ' malformed: '.$reason .'</div>';
     }
-    private function reportmalformeduser($filefullpath, $reason) {
+
+    /**
+     * Writes log for malformed user in file.
+     * @param string $filefullpath string file
+     * @param string $reason reason why the file was malformed
+     */
+    private function reportmalformeduser(string $filefullpath, string $reason) {
         echo '<div>'.$filefullpath . ' malformed: '.$reason .'</div>';
     }
+
+    /**
+     * check if there're old files in working dir that need to be re-processed
+     */
     private function checkoldfiles() {
         $files = $this->fm->listoldimportfiles();
         foreach ($files as $file) {
             $this->fm->movefiletoimportdir($file);
         }
     }
-    private function cleanfilerow(&$csvheader) {
+
+    /**
+     * Trim fields in header file
+     * @param array $csvheader csv header of import file
+     */
+    private function cleanfilerow(array &$csvheader) {
         foreach ($csvheader as &$field) {
             $field = trim($field);
         }
     }
-    private function checkmalformedfile($file, $filehandle, $csvheader) {
+
+    /**
+     * Check if a file is malformed, against various rules.
+     * @param string $file string the file full path
+     * @param resource $filehandle string file hanlder
+     * @param array $csvheader string the header csv ros
+     * @return bool true if ok, false otherwise
+     * @throws coding_exception
+     */
+    private function checkmalformedfile(string $file, resource $filehandle, array $csvheader) {
         if (!array_key_exists($this->userkey, $csvheader)) {
             $this->reportmalformedfile($file, get_string('malformedfilemissingrequiredfield',
                 'local_usersynccsv', $this->userkey));
@@ -110,7 +157,18 @@ class local_usersynccsv_usersync
         }
         return true;
     }
-    private function checkmalformeduser($file, $linenumber, $csvuser, $numexpectedfields, $csvheader, &$filemalformed) {
+
+    /**
+     * Check if user is malformed, against various rules
+     * @param string $file  file full path
+     * @param int $linenumber  line number in import file
+     * @param array $csvuser  csv user to be imported
+     * @param int $numexpectedfields
+     * @param array $csvheader  csv header found in the import file
+     * @param bool $filemalformed  true if file is malformed
+     * @throws coding_exception
+     */
+    private function checkmalformeduser(string $file, int $linenumber, array $csvuser, int $numexpectedfields, array $csvheader, bool &$filemalformed) {
         if ($csvuser && false !== $csvuser) {
             if ($numexpectedfields == count($csvuser)) {
                 $ret = $this->create_update_user($csvuser, $csvheader);
@@ -127,7 +185,13 @@ class local_usersynccsv_usersync
 
         }
     }
-    private function dofile($file) {
+
+    /**
+     * import specified file
+     * @param string $file  file full path
+     * @throws coding_exception
+     */
+    private function importfile(string $file) {
         $linenumber = 1;
         $filehandle = null;
         try {
@@ -164,6 +228,10 @@ class local_usersynccsv_usersync
             $this->fm->movefiletodiscarddir($file);
         }
     }
+
+    /**
+     * Check files to be imported, check tables to be exported
+     */
     public function performcheck() {
 
         // Check old files.
@@ -173,7 +241,7 @@ class local_usersynccsv_usersync
         $files = $this->fm->listnewimportfiles();
 
         foreach ($files as $file) {
-            $this->dofile($file);
+            $this->importfile($file);
         }
 
         $this->fm->cleanuparchivedir();
