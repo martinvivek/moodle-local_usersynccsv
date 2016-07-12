@@ -45,7 +45,9 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('local_usersynccsv/archivedirmaxsize',
         get_string('archivedirmaxsize', 'local_usersynccsv'), get_string('archivedirmaxsize_help',
             'local_usersynccsv'), '', PARAM_INT));
-
+    $settings->add(new admin_setting_configtext('local_usersynccsv/dbfiletablemaxday',
+        get_string('dbfiletablemaxday', 'local_usersynccsv'), get_string('dbfiletablemaxday_help',
+            'local_usersynccsv'), 20, PARAM_INT));
     $settings->add(new admin_setting_configcheckbox('local_usersynccsv/isexport',
         get_string('isexport', 'local_usersynccsv'), get_string('isexport_help', 'local_usersynccsv'), '0'));
     $settings->add(new admin_setting_configtext('local_usersynccsv/exportdir',

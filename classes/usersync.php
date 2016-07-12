@@ -94,7 +94,6 @@ class local_usersynccsv_usersync
         } else {
             $this->customrequiredfields = explode(',', $config->requiredfields);
         }
-
     }
 
     /**
@@ -274,7 +273,7 @@ class local_usersynccsv_usersync
             $this->importfile($file);
         }
 
-        $this->fm->cleanuparchivedir();
+        $this->fm->docleanup();
     }
 
     /**

@@ -30,7 +30,7 @@ $string['modulename_help'] = 'Synchronize Users with external system by means of
 $string['pluginadministration'] = 'User Sync CSV administration';
 $string['importdir'] = 'Import Directory';
 $string['importdir_help'] = 'Full path of the working import directory. It must exist on the FileSystem, and Moodle needs to have read/write access to this folder, otherwise the plugin won\'t work';
-$string['archivedirmaxday'] = 'Archive Retention Days';
+$string['archivedirmaxday'] = 'Archive Dir Retention Days';
 $string['archivedirmaxday_help'] = 'Max retention days of archive dirs';
 $string['archivedirmaxsize'] = 'Max Archive Retention Size';
 $string['archivedirmaxsize_help'] = 'Max retention size of archive dir, in MB';
@@ -62,3 +62,7 @@ $string['requiredfields'] = 'Required Fields List';
 $string['requiredfields_help'] = 'CSV List fo required fields. If one of theese is not found in the import file header, the entire import file will be discarded. Default is blank, meaning that no required fields are provided, besides the Moodle required user fields: username , firstname, lastname, email, and of course the import key';
 $string['malformedfilefoundunknownfield'] = 'Unknown field found: {$a}';
 $string['eventsynccsvevent'] = 'Sync CSV';
+$string['dbfiletablemaxday'] = 'File Table Retention Days';
+$string['dbfiletablemaxday_help'] = 'Max retention days of file table, i.e. the table where we store file status';
+
+
