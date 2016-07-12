@@ -369,13 +369,13 @@ class local_usersynccsv_usersync
                 } else {
                     // Insert.
                     $field = new stdClass();
-                    $field->fieldid = $this->usercustomfiledshortnames[$customfieldshortname]->id;
+                    $field->fieldid = $this->usercustomfiledshortnames[$customfieldshortname]->customfieldid;
                     $field->userid = $user->id;
                     $field->data = $customfieldvalue;
                     //data format is not supported
                     $DB->insert_record('user_info_data', $field);
-                    $user = $DB->get_record('user', array($this->userkey => $userkey));
-                    if (!$user) {
+                    $field = $DB->get_record('user_info_data', array('fieldid' => $field->fieldid, 'userid' => $field->userid));
+                    if (!$field) {
                         print_error('auth_drupalservicescantinsert', 'auth_db', $user->username);
                     }
                 }
