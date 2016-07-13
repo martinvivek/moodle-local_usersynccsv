@@ -143,7 +143,7 @@ class local_usersynccsv_fileman
                 $filefullpath = $this->importdir . DIRECTORY_SEPARATOR . $file;
                 if (!is_dir($filefullpath)) {
                     $files[filemtime(utf8_decode($filefullpath))] = $filefullpath;
-                    local_usersynccsv_dbfileman::registerfile($file,local_usersynccsv_dbfileman::TOIMPORT);
+                    local_usersynccsv_dbfileman::registerfile($file, local_usersynccsv_dbfileman::TOIMPORT);
                 }
             }
             closedir($handle);
@@ -183,7 +183,7 @@ class local_usersynccsv_fileman
         $basename = basename($filefullpath);
         $newname = $this->fullworkdir . DIRECTORY_SEPARATOR . $basename;
         rename($filefullpath, $newname);
-        local_usersynccsv_dbfileman::registerfile($basename,local_usersynccsv_dbfileman::TOIMPORT);
+        local_usersynccsv_dbfileman::registerfile($basename, local_usersynccsv_dbfileman::TOIMPORT);
         return $newname;
     }
 
@@ -196,7 +196,7 @@ class local_usersynccsv_fileman
         $basename = basename($filefullpath);
         $newname = $this->importdir . DIRECTORY_SEPARATOR . $basename;
         rename($filefullpath, $newname);
-        local_usersynccsv_dbfileman::registerfile($basename,local_usersynccsv_dbfileman::TOIMPORT);
+        local_usersynccsv_dbfileman::registerfile($basename, local_usersynccsv_dbfileman::TOIMPORT);
         return $newname;
     }
 
@@ -213,7 +213,7 @@ class local_usersynccsv_fileman
         }
         $newname = $archivesubdir . DIRECTORY_SEPARATOR . $basename;
         rename($filefullpath, $newname);
-        local_usersynccsv_dbfileman::registerfile($basename,local_usersynccsv_dbfileman::ARCHIVED);
+        local_usersynccsv_dbfileman::registerfile($basename, local_usersynccsv_dbfileman::ARCHIVED);
         return $newname;
     }
     /**
@@ -226,7 +226,7 @@ class local_usersynccsv_fileman
             $basename = basename($filefullpath);
             $newname = $this->fulldiscarddir . DIRECTORY_SEPARATOR . $basename;
             rename($filefullpath, $newname);
-            local_usersynccsv_dbfileman::registerfile($basename,local_usersynccsv_dbfileman::DISCARDED);
+            local_usersynccsv_dbfileman::registerfile($basename, local_usersynccsv_dbfileman::DISCARDED);
             return $newname;
         } catch (Exception $ex) {
             // TODO report error.
@@ -275,7 +275,7 @@ class local_usersynccsv_fileman
         }
 
         if (!is_dir($dir)) {
-            local_usersynccsv_dbfileman::registerfile(basename($dir),local_usersynccsv_dbfileman::DELETEDFS);
+            local_usersynccsv_dbfileman::registerfile(basename($dir), local_usersynccsv_dbfileman::DELETEDFS);
             return unlink($dir);
         }
 
@@ -383,7 +383,8 @@ class local_usersynccsv_fileman
                 $filefullpath = $this->fulldiscarddir . DIRECTORY_SEPARATOR . $file->name;
                 break;
             case local_usersynccsv_dbfileman::ARCHIVED:
-                $filefullpath = $this->fullarchivedir . DIRECTORY_SEPARATOR . $file->archivesubdir . DIRECTORY_SEPARATOR . $file->name;
+                $filefullpath = $this->fullarchivedir . DIRECTORY_SEPARATOR .
+                    $file->archivesubdir . DIRECTORY_SEPARATOR . $file->name;
                 break;
             default:
                 $filefullpath = '';

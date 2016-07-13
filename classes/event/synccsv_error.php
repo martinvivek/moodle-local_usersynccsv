@@ -44,12 +44,11 @@ class synccsv_error extends \core\event\base {
     }
 
     public function get_description() {
-        return get_string('synccsveeventdescription','local_usersynccsv'). " {$this->objectid} {$this->other}.";
+        return get_string('synccsveeventdescription', 'local_usersynccsv'). " {$this->objectid} {$this->other}.";
     }
 
-    public function get_url()
-    {
+    public function get_url() {
         global $CFG;
-        return new \moodle_url($CFG->wwwroot .'\local\usersynccsv\file.php',array('id' => $this->objectid));
+        return new \moodle_url($CFG->wwwroot .'\local\usersynccsv\file.php', array('id' => $this->objectid));
     }
 }

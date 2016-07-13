@@ -56,7 +56,7 @@ class local_usersynccsv_dbfileman
      */
     public static function registerfile($filename, $filestatus, $archivesubdir='') {
         global $DB;
-        $file = $DB->get_record('local_usersynccsv_file',array('name' => $filename));
+        $file = $DB->get_record('local_usersynccsv_file', array('name' => $filename));
         $now = time();
         if ($file) {
             $file->status = $filestatus;
@@ -72,7 +72,7 @@ class local_usersynccsv_dbfileman
             $file->archivesubdir = $archivesubdir;
             $DB->insert_record('local_usersynccsv_file', $file);
         }
-        self::$currentfileid = $file->id ;
+        self::$currentfileid = $file->id;
     }
 
     public static function getfilefromid($fileid) {
@@ -87,7 +87,7 @@ class local_usersynccsv_dbfileman
         $config = get_config('local_usersynccsv');
         $maxday = $config->dbfiletablemaxday;
         $mindaytime = time();
-        $mindaytime -= $maxday*86400;
+        $mindaytime -= $maxday * 86400;
         $DB->delete_records_select('local_usersynccsv_file', 'timecreated < ? ', array($mindaytime));
     }
 }

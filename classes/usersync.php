@@ -102,7 +102,6 @@ class local_usersynccsv_usersync
      */
     private function reportmalformedfile($reason) {
         local_usersynccsv_logger::logerror($reason);
-        //echo '<div>'.$filefullpath . ' malformed: '.$reason .'</div>';
     }
 
     /**
@@ -111,7 +110,6 @@ class local_usersynccsv_usersync
      */
     private function reportmalformeduser($reason) {
         local_usersynccsv_logger::logerror($reason);
-        //echo '<div>'.$filefullpath . ' malformed: '.$reason .'</div>';
     }
 
     /**
@@ -170,9 +168,10 @@ class local_usersynccsv_usersync
             }
         }
 
-        //check that each field in the file has a corresponding column in user tables, or a custom user field
+        // Check that each field in the file has a corresponding column in user tables, or a custom user field.
         foreach ($csvheader as $fieldname => $fieldkey) {
-            if (!array_key_exists($fieldname, $this->usertablecolumns) && !array_key_exists($fieldname, $this->usercustomfiledshortnames)) {
+            if (!array_key_exists($fieldname, $this->usertablecolumns) &&
+                !array_key_exists($fieldname, $this->usercustomfiledshortnames)) {
                 $this->reportmalformedfile(get_string('malformedfilefoundunknownfield',
                     'local_usersynccsv', $fieldname));
                 fclose($filehandle);
@@ -265,7 +264,7 @@ class local_usersynccsv_usersync
         // Check for new files.
         $files = $this->fm->listnewimportfiles();
         if (count($files) > 0) {
-            //retieve import info from DB, since there are files to be imported
+            // Rretieve import info from DB, since there are files to be imported.
             $this->retrievedbimportinfo();
         }
         foreach ($files as $file) {
@@ -302,6 +301,7 @@ class local_usersynccsv_usersync
         }
 
     }
+
     /**
      * function to grab Moodle user and update their fields then return the
      * account. If the account does not exist, create it.
@@ -326,7 +326,7 @@ class local_usersynccsv_usersync
             }
             $user->modified = time();
             $customfields = array();
-            // User fields and custom fields
+            // User fields and custom fields.
             foreach ($csvheader as $fieldname => $fieldpos) {
                 $fieldname = trim($fieldname);
                 if (array_key_exists($fieldname, $this->usertablecolumns)) {
@@ -355,33 +355,39 @@ class local_usersynccsv_usersync
                     print_error('auth_drupalservicescantupdate', 'auth_db', $user->username);
                 }
             }
-            //custom fields, if any
-            foreach ($customfields as $customfieldshortname => $customfieldvalue) {
-                $field = $DB->get_record('user_info_data', array('fieldid' => $this->usercustomfiledshortnames[$customfieldshortname]->customfieldid, 'userid' => $user->id));
-                if ($field) {
-                    // Update.
-                    $field->data = $customfieldvalue;
-                    if (!$DB->update_record('user_info_data', $field)) {
-                        print_error('auth_drupalservicescantupdate', 'auth_db', $user->username);
-                    }
-                } else {
-                    // Insert.
-                    $field = new stdClass();
-                    $field->fieldid = $this->usercustomfiledshortnames[$customfieldshortname]->customfieldid;
-                    $field->userid = $user->id;
-                    $field->data = $customfieldvalue;
-                    //data format is not supported
-                    $DB->insert_record('user_info_data', $field);
-                    $field = $DB->get_record('user_info_data', array('fieldid' => $field->fieldid, 'userid' => $field->userid));
-                    if (!$field) {
-                        print_error('auth_drupalservicescantinsert', 'auth_db', $user->username);
-                    }
-                }
-            }
+            // Custom fields, if any.
+            $this->create_update_user_custom_field($customfields, $user);
             return true;
         } catch (Exception $ex) {
             return $ex->getMessage();
         }
+    }
 
+    private function create_update_user_custom_field($customfields, $user){
+        global $DB;
+        //custom fields, if any
+        foreach ($customfields as $customfieldshortname => $customfieldvalue) {
+            $field = $DB->get_record('user_info_data',
+                array('fieldid' => $this->usercustomfiledshortnames[$customfieldshortname]->customfieldid, 'userid' => $user->id));
+            if ($field) {
+                // Update.
+                $field->data = $customfieldvalue;
+                if (!$DB->update_record('user_info_data', $field)) {
+                    print_error('auth_drupalservicescantupdate', 'auth_db', $user->username);
+                }
+            } else {
+                // Insert.
+                $field = new stdClass();
+                $field->fieldid = $this->usercustomfiledshortnames[$customfieldshortname]->customfieldid;
+                $field->userid = $user->id;
+                $field->data = $customfieldvalue;
+                // Data format is not supported.
+                $DB->insert_record('user_info_data', $field);
+                $field = $DB->get_record('user_info_data', array('fieldid' => $field->fieldid, 'userid' => $field->userid));
+                if (!$field) {
+                    print_error('auth_drupalservicescantinsert', 'auth_db', $user->username);
+                }
+            }
+        }
     }
 }

@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class local_usersynccsv_logger
 {
 
-    public static function logdofile( $msg = ''){
+    public static function logdofile( $msg = '') {
 
         $event = \local_usersynccsv\event\synccsv_dofile::create(array(
             'objectid' => local_usersynccsv_dbfileman::$currentfileid,
@@ -45,7 +45,7 @@ class local_usersynccsv_logger
         $event->trigger();
     }
 
-    public static function logerror( $msg = ''){
+    public static function logerror( $msg = '') {
 
         $event = \local_usersynccsv\event\synccsv_error::create(array(
             'objectid' => local_usersynccsv_dbfileman::$currentfileid,
