@@ -116,14 +116,6 @@ class local_usersynccsv_fileman
     }
 
     /**
-     * get archive dir full path
-     * @return string full archive dir path
-     */
-    public function getfullarchivedir() {
-        return $this->fullarchivedir;
-    }
-
-    /**
      * Old syntax of class constructor. Deprecated in PHP7.
      *
      * @deprecated since Moodle 3.1

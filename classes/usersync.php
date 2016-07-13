@@ -169,11 +169,12 @@ class local_usersynccsv_usersync
         }
 
         // Check that each field in the file has a corresponding column in user tables, or a custom user field.
-        foreach ($csvheader as $fieldname => $fieldkey) {
-            if (!array_key_exists($fieldname, $this->usertablecolumns) &&
-                !array_key_exists($fieldname, $this->usercustomfiledshortnames)) {
+        $csvheaderkeys = array_keys($csvheader);
+        foreach ($csvheaderkeys as $fieldkey) {
+            if (!array_key_exists($fieldkey, $this->usertablecolumns) &&
+                !array_key_exists($fieldkey, $this->usercustomfiledshortnames)) {
                 $this->reportmalformedfile(get_string('malformedfilefoundunknownfield',
-                    'local_usersynccsv', $fieldname));
+                    'local_usersynccsv', $fieldkey));
                 fclose($filehandle);
                 $this->fm->movefiletodiscarddir($file);
                 return false;
@@ -363,9 +364,9 @@ class local_usersynccsv_usersync
         }
     }
 
-    private function create_update_user_custom_field($customfields, $user){
+    private function create_update_user_custom_field($customfields, $user) {
         global $DB;
-        //custom fields, if any
+        // Custom fields, if any.
         foreach ($customfields as $customfieldshortname => $customfieldvalue) {
             $field = $DB->get_record('user_info_data',
                 array('fieldid' => $this->usercustomfiledshortnames[$customfieldshortname]->customfieldid, 'userid' => $user->id));

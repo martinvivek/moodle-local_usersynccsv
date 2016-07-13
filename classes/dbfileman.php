@@ -70,7 +70,8 @@ class local_usersynccsv_dbfileman
             $file->timecreated = $now;
             $file->timemodified = $now;
             $file->archivesubdir = $archivesubdir;
-            $DB->insert_record('local_usersynccsv_file', $file);
+            $newid = $DB->insert_record('local_usersynccsv_file', $file, true);
+            $file->id = $newid;
         }
         self::$currentfileid = $file->id;
     }
