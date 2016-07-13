@@ -291,7 +291,7 @@ class local_usersynccsv_usersync
         if (count($files) > 0) {
             // Retrieve import info from DB, since there are files to be imported.
             if (!$this->retrievedbimportinfo()) {
-                local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv','Setting'));
+                local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv', 'Setting'));
                 return;
             }
         }
@@ -423,7 +423,7 @@ class local_usersynccsv_usersync
                 // Update.
                 $field->data = $customfieldvalue;
                 if (!$DB->update_record('user_info_data', $field)) {
-                    return get_string('genericdberror','local_usersynccsv', 'user_info_data');
+                    return get_string('genericdberror', 'local_usersynccsv', 'user_info_data');
                 }
             } else {
                 // Insert.
@@ -435,7 +435,7 @@ class local_usersynccsv_usersync
                 $DB->insert_record('user_info_data', $field);
                 $field = $DB->get_record('user_info_data', array('fieldid' => $field->fieldid, 'userid' => $field->userid));
                 if (!$field) {
-                    return get_string('genericdberror','local_usersynccsv', 'user_info_data');
+                    return get_string('genericdberror', 'local_usersynccsv', 'user_info_data');
                 }
             }
         }
