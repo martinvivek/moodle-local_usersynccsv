@@ -214,17 +214,11 @@ class local_usersynccsv_fileman
      * @return string filename
      */
     public function movefiletodiscarddir($filefullpath) {
-        try {
             $basename = basename($filefullpath);
             $newname = $this->fulldiscarddir . DIRECTORY_SEPARATOR . $basename;
             rename($filefullpath, $newname);
             local_usersynccsv_dbfileman::registerfile($basename, local_usersynccsv_dbfileman::DISCARDED);
             return $newname;
-        } catch (Exception $ex) {
-            // TODO report error.
-            return '';
-        }
-
     }
 
     public function docleanup() {
@@ -302,14 +296,15 @@ class local_usersynccsv_fileman
     private function checkconfigdir($configdir) {
         if (!file_exists($configdir)) {
             $this->handlefatalerror($configdir.'missing', 'local_usersynccsv', $configdir);
+            return false;
+        } else {
             if (!is_writable($configdir)) {
                 $this->handlefatalerror($configdir.'notwritable', 'local_usersynccsv', $configdir);
                 return false;
             } else {
                 return true;
             }
-        } else {
-            return true;
+
         }
     }
 
@@ -351,7 +346,6 @@ class local_usersynccsv_fileman
     }
     /**
      * handle fatal error
-     * TODO what shall we do in case of fatal error?
      * @param string $smgconst to be resolved with get_string
      * @param string $component defaults to local_usersynccsv
      * @param string $a optional $smgconst parameter
@@ -360,6 +354,7 @@ class local_usersynccsv_fileman
     private function handlefatalerror($smgconst, $component, $a = null) {
         $this->errormsg = get_string($smgconst, $component, $a);
         $this->iserror = true;
+        local_usersynccsv_logger::logerror($this->errormsg);
     }
 
     public function getfilefullpathfromid($fileid) {
