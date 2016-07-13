@@ -255,9 +255,33 @@ class local_usersynccsv_usersync
     }
 
     /**
+     * @return bool true on success
+     */
+    private function checkconfigok() {
+
+        if ($this->userkey == '') {
+            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv','userkey'));
+            return false;
+        }
+        if ($this->csvdelimiter == '') {
+            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv','csvdelimiter'));
+            return false;
+        }
+        return true;
+    }
+    /**
      * Check files to be imported, check tables to be exported
      */
     public function performcheck() {
+
+        if (!$this->fm->checkconfigok()) {
+            local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv','File'));
+            return;
+        }
+        if (!$this->checkconfigok()) {
+            local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv','Setting'));
+            return;
+        }
 
         // Check old files.
         $this->checkoldfiles();
@@ -265,8 +289,11 @@ class local_usersynccsv_usersync
         // Check for new files.
         $files = $this->fm->listnewimportfiles();
         if (count($files) > 0) {
-            // Rretieve import info from DB, since there are files to be imported.
-            $this->retrievedbimportinfo();
+            // Retrieve import info from DB, since there are files to be imported.
+            if (!$this->retrievedbimportinfo()) {
+                local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv','Setting'));
+                return;
+            }
         }
         foreach ($files as $file) {
             $this->importfile($file);
@@ -282,11 +309,15 @@ class local_usersynccsv_usersync
 
         global $DB;
 
+        $founduserkey = false;
         // Users.
         $columns = $DB->get_columns('user');
         foreach ($columns as $column) {
             $dbfield = new local_usersynccsv_dbfield();
             $dbfield->name = $column->name;
+            if ($dbfield->name == $this->userkey) {
+                $founduserkey = true;
+            }
             $dbfield->iscustomfield = false;
             $this->usertablecolumns[$dbfield->name] = $dbfield;
         }
@@ -296,10 +327,17 @@ class local_usersynccsv_usersync
         foreach ($columns as $column) {
             $dbfield = new local_usersynccsv_dbfield();
             $dbfield->name = $column->shortname;
+            if ($dbfield->name == $this->userkey) {
+                $founduserkey = true;
+            }
             $dbfield->iscustomfield = true;
             $dbfield->customfieldid = $column->id;
             $this->usercustomfiledshortnames[$dbfield->name] = $dbfield;
         }
+        if (!$founduserkey) {
+            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv','userkey'));
+        }
+        return $founduserkey;
 
     }
 
@@ -311,7 +349,7 @@ class local_usersynccsv_usersync
      * @param array $csvuser the user array.
      * @param array $csvheader the header fields array.
      *
-     * @return array Moodle user
+     * @return bool|string true on success, string on error
      */
     private function create_update_user($csvuser, $csvheader) {
 
@@ -341,29 +379,36 @@ class local_usersynccsv_usersync
             $user->password    = hash_internal_user_password('guest');
             $user->auth        = 'manual';
             $user->confirmed   = 1;
+            if (empty($user->city)) $user->city = "none";
+            if (empty($user->country)) $user->country = "no";
             if (!property_exists($user, 'id')) {
                 // Add the new user to Moodle.
                 $DB->insert_record('user', $user);
                 $user = $DB->get_record('user', array($this->userkey => $userkey));
                 if (!$user) {
-                    print_error('auth_drupalservicescantinsert', 'auth_db', $user->username);
+                    return get_string('genericdberror','local_usersynccsv', 'user');
                 }
             } else {
 
                 // Update user information.
                 // Username "could" change. userkey should never change.
                 if (!$DB->update_record('user', $user)) {
-                    print_error('auth_drupalservicescantupdate', 'auth_db', $user->username);
+                    return get_string('genericdberror','local_usersynccsv', 'user');
                 }
             }
             // Custom fields, if any.
-            $this->create_update_user_custom_field($customfields, $user);
-            return true;
+            return $this->create_update_user_custom_field($customfields, $user);
         } catch (Exception $ex) {
             return $ex->getMessage();
         }
     }
 
+    /**
+     * Creates/Updates custom fields, if any
+     * @param array $customfields
+     * @param stdClass $user
+     * @return bool|string true on success, string on error
+     */
     private function create_update_user_custom_field($customfields, $user) {
         global $DB;
         // Custom fields, if any.
@@ -374,7 +419,7 @@ class local_usersynccsv_usersync
                 // Update.
                 $field->data = $customfieldvalue;
                 if (!$DB->update_record('user_info_data', $field)) {
-                    print_error('auth_drupalservicescantupdate', 'auth_db', $user->username);
+                    return get_string('genericdberror','local_usersynccsv', 'user_info_data');
                 }
             } else {
                 // Insert.
@@ -386,9 +431,10 @@ class local_usersynccsv_usersync
                 $DB->insert_record('user_info_data', $field);
                 $field = $DB->get_record('user_info_data', array('fieldid' => $field->fieldid, 'userid' => $field->userid));
                 if (!$field) {
-                    print_error('auth_drupalservicescantinsert', 'auth_db', $user->username);
+                    return get_string('genericdberror','local_usersynccsv', 'user_info_data');
                 }
             }
         }
+        return true;
     }
 }

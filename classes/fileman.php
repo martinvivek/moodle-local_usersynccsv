@@ -38,12 +38,7 @@ class local_usersynccsv_fileman
     /**
      * @var bool true if any error occurred during execution
      */
-    public $iserror = false;
-
-    /**
-     * @var string detailed error message
-     */
-    public $errormsg = '';
+    private $iserror = false;
 
     /**
      * @var string format of archive subdirectory eg 20160721
@@ -113,6 +108,10 @@ class local_usersynccsv_fileman
         $this->fullarchivedir = $this->importdir . DIRECTORY_SEPARATOR . self::$archivedir;
         $this->fulldiscarddir = $this->importdir . DIRECTORY_SEPARATOR . self::$discarddir;
         $this->checkconfigdirs();
+    }
+
+    public function checkconfigok() {
+        return $this->iserror;
     }
 
     /**
@@ -315,7 +314,19 @@ class local_usersynccsv_fileman
     private function checkrequiredsubdir($subdir) {
         if (!file_exists($subdir)) {
             $this->makedir($subdir);
+            if (!file_exists($subdir)) {
+                // Maybe we don't have the right permissions
+                $this->handlefatalerror($subdir.'notwritable', 'local_usersynccsv', $subdir);
+                return false;
+            }
         }
+        // If we are here, it exists
+        if (!is_writable($subdir)) {
+            $this->handlefatalerror($subdir.'notwritable', 'local_usersynccsv', $subdir);
+            return false;
+        }
+        return true;
+
     }
     /**
      * Check import dir structure to see if every required subfolder exists
@@ -323,16 +334,23 @@ class local_usersynccsv_fileman
     private function checkconfigdirs() {
 
         if (!$this->checkconfigdir($this->importdir)) {
-            return;
+            return false;
         }
         if ($this->isexport && !$this->checkconfigdir($this->exportdir)) {
-            return;
+            return false;
         }
 
         // Now check subfolders. Make them if they don't exist.
-        $this->checkrequiredsubdir($this->fullworkdir);
-        $this->checkrequiredsubdir($this->fullarchivedir);
-        $this->checkrequiredsubdir($this->fulldiscarddir);
+        if (!$this->checkrequiredsubdir($this->fullworkdir)) {
+            return false;
+        }
+        if (!$this->checkrequiredsubdir($this->fullarchivedir)) {
+            return false;
+        }
+        if (!$this->checkrequiredsubdir($this->fulldiscarddir)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -352,9 +370,8 @@ class local_usersynccsv_fileman
      * @throws coding_exception
      */
     private function handlefatalerror($smgconst, $component, $a = null) {
-        $this->errormsg = get_string($smgconst, $component, $a);
         $this->iserror = true;
-        local_usersynccsv_logger::logerror($this->errormsg);
+        local_usersynccsv_logger::logerror(get_string($smgconst, $component, $a));
     }
 
     public function getfilefullpathfromid($fileid) {

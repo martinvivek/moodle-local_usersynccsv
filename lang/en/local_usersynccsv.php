@@ -67,4 +67,6 @@ $string['dbfiletablemaxday'] = 'File Table Retention Days';
 $string['dbfiletablemaxday_help'] = 'Max retention days of file table, i.e. the table where we store file status';
 $string['synccsveeventdescription'] = 'The file with id';
 $string['maineventname'] = 'User Sync CSV';
-
+$string['genericdberror'] = 'DB Error in table: {$a}';
+$string['configerror'] = '{$a} configuration error, can\'t start execution';
+$string['requiredconfigsetting'] = 'Required configuration setting not properly set: {$a}';
