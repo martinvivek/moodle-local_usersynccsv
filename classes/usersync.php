@@ -260,11 +260,11 @@ class local_usersynccsv_usersync
     private function checkconfigok() {
 
         if ($this->userkey == '') {
-            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv','userkey'));
+            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv', 'userkey'));
             return false;
         }
         if ($this->csvdelimiter == '') {
-            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv','csvdelimiter'));
+            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv', 'csvdelimiter'));
             return false;
         }
         return true;
@@ -275,11 +275,11 @@ class local_usersynccsv_usersync
     public function performcheck() {
 
         if (!$this->fm->checkconfigok()) {
-            local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv','File'));
+            local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv', 'File'));
             return;
         }
         if (!$this->checkconfigok()) {
-            local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv','Setting'));
+            local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv', 'Setting'));
             return;
         }
 
@@ -335,7 +335,7 @@ class local_usersynccsv_usersync
             $this->usercustomfiledshortnames[$dbfield->name] = $dbfield;
         }
         if (!$founduserkey) {
-            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv','userkey'));
+            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv', 'userkey'));
         }
         return $founduserkey;
 
@@ -379,21 +379,25 @@ class local_usersynccsv_usersync
             $user->password    = hash_internal_user_password('guest');
             $user->auth        = 'manual';
             $user->confirmed   = 1;
-            if (empty($user->city)) $user->city = "none";
-            if (empty($user->country)) $user->country = "no";
+            if (empty($user->city)) {
+                $user->city = "none";
+            }
+            if (empty($user->country)) {
+                $user->country = "no";
+            }
             if (!property_exists($user, 'id')) {
                 // Add the new user to Moodle.
                 $DB->insert_record('user', $user);
                 $user = $DB->get_record('user', array($this->userkey => $userkey));
                 if (!$user) {
-                    return get_string('genericdberror','local_usersynccsv', 'user');
+                    return get_string('genericdberror', 'local_usersynccsv', 'user');
                 }
             } else {
 
                 // Update user information.
                 // Username "could" change. userkey should never change.
                 if (!$DB->update_record('user', $user)) {
-                    return get_string('genericdberror','local_usersynccsv', 'user');
+                    return get_string('genericdberror', 'local_usersynccsv', 'user');
                 }
             }
             // Custom fields, if any.
