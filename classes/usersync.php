@@ -55,6 +55,10 @@ class local_usersynccsv_usersync
     private $userkey;
 
     /**
+     * @var bool true if user key is custom field, false if it's a filed of user table
+     */
+    private $userkeyiscustomfield;
+    /**
      * @var string character used as csv delimiter
      */
     private $csvdelimiter;
@@ -316,6 +320,7 @@ class local_usersynccsv_usersync
             $dbfield = new local_usersynccsv_dbfield();
             $dbfield->name = $column->name;
             if ($dbfield->name == $this->userkey) {
+                $this->userkeyiscustomfield = false;
                 $founduserkey = true;
             }
             $dbfield->iscustomfield = false;
@@ -328,6 +333,7 @@ class local_usersynccsv_usersync
             $dbfield = new local_usersynccsv_dbfield();
             $dbfield->name = $column->shortname;
             if ($dbfield->name == $this->userkey) {
+                $this->userkeyiscustomfield = true;
                 $founduserkey = true;
             }
             $dbfield->iscustomfield = true;
@@ -357,7 +363,17 @@ class local_usersynccsv_usersync
         try {
             $userkey = $csvuser[$csvheader[$this->userkey]];
             // Look for user with key.
-            $user = $DB->get_record('user', array($this->userkey => $userkey));
+            if ($this->userkeyiscustomfield) {
+                // TODO testare.
+                $userid = $DB->get_field('user_info_data', 'userid',
+                    array ('fieldid' => $this->usercustomfiledshortnames[$this->userkey]->customfieldid, 'data' => $userkey), true);
+                if ($userid) {
+                    $user = $DB->get_record('user', array('id' => $userid));
+                }
+            } else {
+                $user = $DB->get_record('user', array($this->userkey => $userkey));
+            }
+
 
             if (empty($user)) {
                 // Build the new user object to be put into the Moodle database.
