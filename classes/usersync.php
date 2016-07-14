@@ -374,7 +374,6 @@ class local_usersynccsv_usersync
                 $user = $DB->get_record('user', array($this->userkey => $userkey));
             }
 
-
             if (empty($user)) {
                 // Build the new user object to be put into the Moodle database.
                 $user = new stdClass();
