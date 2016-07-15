@@ -69,4 +69,7 @@ if ($hassiteconfig) {
 
     $settings->add(new admin_setting_configtext('local_usersynccsv/requiredfields',
         get_string('requiredfields', 'local_usersynccsv'), get_string('requiredfields_help', 'local_usersynccsv'), '', PARAM_TEXT));
+
+    $settings->add(new admin_setting_configtext('local_usersynccsv/defpassowrd',
+        get_string('defpassowrd', 'local_usersynccsv'), get_string('defpassowrd_help', 'local_usersynccsv'), '', PARAM_TEXT));
 }

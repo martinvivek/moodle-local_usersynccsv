@@ -70,3 +70,5 @@ $string['maineventname'] = 'User Sync CSV';
 $string['genericdberror'] = 'DB Error in table: {$a}';
 $string['configerror'] = '{$a} configuration error, can\'t start execution';
 $string['requiredconfigsetting'] = 'Required configuration setting not properly set: {$a}';
+$string['defpassowrd'] = 'Default User Password';
+$string['defpassowrd_help'] = 'Default user passowrd (plain), if not found in import file';

@@ -84,6 +84,11 @@ class local_usersynccsv_usersync
     private $usercustomfiledshortnames;
 
     /**
+     * @var string Default password, if missing in import file
+     */
+    private $defpassowrd;
+
+    /**
      * local_usersynccsv_usersync constructor.
      */
     public function __construct() {
@@ -93,6 +98,7 @@ class local_usersynccsv_usersync
         $this->csvdelimiter = $config->csvdelimiter;
         $this->csvenclosure = $config->csvenclosure;
         $this->csvescape = $config->csvescape;
+        $this->defpassowrd = $config->defpassowrd;
         if (trim( $config->requiredfields) == '') {
             $this->customrequiredfields = array();
         } else {
@@ -271,6 +277,10 @@ class local_usersynccsv_usersync
             local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv', 'csvdelimiter'));
             return false;
         }
+        if ($this->defpassowrd == '') {
+            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv', 'defpassowrd'));
+            return false;
+        }
         return true;
     }
     /**
@@ -391,7 +401,6 @@ class local_usersynccsv_usersync
             }
             $user->lang = $CFG->lang;
             $user->mnethostid = $CFG->mnet_localhost_id;
-            $user->password    = hash_internal_user_password('guest');
             $user->auth        = 'manual';
             $user->confirmed   = 1;
             if (empty($user->city)) {
@@ -402,6 +411,9 @@ class local_usersynccsv_usersync
             }
             if (!property_exists($user, 'id')) {
                 // Add the new user to Moodle.
+                if (!property_exists($user, 'password')) {
+                    $user->password = hash_internal_user_password($this->defpassowrd);
+                }
                 $DB->insert_record('user', $user);
                 $user = $DB->get_record('user', array($this->userkey => $userkey));
                 if (!$user) {
