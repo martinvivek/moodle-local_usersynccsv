@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The synccsv_dofile event.
+ * The synccsvconf_error event.
  *
  * @package    local_usersynccsv
  * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
@@ -24,19 +24,18 @@
 namespace local_usersynccsv\event;
 defined('MOODLE_INTERNAL') || die();
 /**
- * The synccsv_dofile event class.
+ * The synccsvconf_error event class.
  *
  * @package    local_usersynccsv
  * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class synccsv_dofile extends \core\event\base {
+class synccsvconf_error extends \core\event\base {
     /**
      * Event init
      */
     protected function init() {
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = 'local_usersynccsv_file';
         $this->data['crud'] = 'c';
         $this->context = \context_system::instance();
     }
@@ -46,7 +45,7 @@ class synccsv_dofile extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('synccsv_dofile-event', 'local_usersynccsv');
+        return get_string('synccsvconf_error-event', 'local_usersynccsv');
     }
 
     /**
@@ -54,7 +53,7 @@ class synccsv_dofile extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return get_string('synccsveeventdescription', 'local_usersynccsv'). " {$this->objectid} {$this->other}.";
+        return get_string('synccsveeventconferrdescription', 'local_usersynccsv'). " {$this->objectid} {$this->other}.";
     }
 
     /**

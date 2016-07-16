@@ -89,6 +89,27 @@ class local_usersynccsv_usersync
     private $defpassowrd;
 
     /**
+     * discard never
+     */
+    const DISCARD_NEVER = 'NEVER';
+
+    /**
+     * dicard on file malformed
+     */
+    const DISCARD_FILEERR = 'FILE_ERROR';
+
+    /**
+     * dicard if there's at least one user malformed
+     */
+    const DISCARD_USERERR = 'USER_ERROR';
+
+    /**
+     * Discard level
+     * @var string
+     */
+    private $discardlevel;
+
+    /**
      * local_usersynccsv_usersync constructor.
      */
     public function __construct() {
@@ -99,6 +120,7 @@ class local_usersynccsv_usersync
         $this->csvenclosure = $config->csvenclosure;
         $this->csvescape = $config->csvescape;
         $this->defpassowrd = $config->defpassowrd;
+        $this->discardlevel = $config->discardlevel;
         if (trim( $config->requiredfields) == '') {
             $this->customrequiredfields = array();
         } else {
@@ -155,7 +177,12 @@ class local_usersynccsv_usersync
             $this->reportmalformedfile(get_string('malformedfilemissingrequiredfield',
                 'local_usersynccsv', $this->userkey));
             fclose($filehandle);
-            $this->fm->movefiletodiscarddir($file);
+            if ($this->discardlevel == self::DISCARD_NEVER) {
+                $this->fm->movefiletoarchivedir($file);
+            } else {
+                $this->fm->movefiletodiscarddir($file);
+            }
+
             return false;
         }
         // Check required moodle user fields.
@@ -164,7 +191,12 @@ class local_usersynccsv_usersync
                 $this->reportmalformedfile(get_string('malformedfilemissingrequiredfield',
                     'local_usersynccsv', $requiredfield));
                 fclose($filehandle);
-                $this->fm->movefiletodiscarddir($file);
+                if ($this->discardlevel == self::DISCARD_NEVER) {
+                    $this->fm->movefiletoarchivedir($file);
+                } else {
+                    $this->fm->movefiletodiscarddir($file);
+                }
+
                 return false;
             }
         }
@@ -173,7 +205,11 @@ class local_usersynccsv_usersync
                 $this->reportmalformedfile(get_string('malformedfilemissingrequiredfield',
                     'local_usersynccsv', $requiredfield));
                 fclose($filehandle);
-                $this->fm->movefiletodiscarddir($file);
+                if ($this->discardlevel == self::DISCARD_NEVER) {
+                    $this->fm->movefiletoarchivedir($file);
+                } else {
+                    $this->fm->movefiletodiscarddir($file);
+                }
                 return false;
             }
         }
@@ -186,7 +222,11 @@ class local_usersynccsv_usersync
                 $this->reportmalformedfile(get_string('malformedfilefoundunknownfield',
                     'local_usersynccsv', $fieldkey));
                 fclose($filehandle);
-                $this->fm->movefiletodiscarddir($file);
+                if ($this->discardlevel == self::DISCARD_NEVER) {
+                    $this->fm->movefiletoarchivedir($file);
+                } else {
+                    $this->fm->movefiletodiscarddir($file);
+                }
                 return false;
             }
         }
@@ -204,21 +244,28 @@ class local_usersynccsv_usersync
      */
     private function importuser($linenumber, $csvuser,
                                         $numexpectedfields, $csvheader, &$filemalformed) {
-        if ($csvuser && false !== $csvuser) {
-            if ($numexpectedfields == count($csvuser)) {
-                $ret = $this->create_update_user($csvuser, $csvheader);
-                if (true !== $ret) {
-                    $this->reportmalformeduser( get_string('malformedfilegenericerror', 'local_usersynccsv',
-                            $linenumber) . ' - ' . $ret);
+        try {
+            if ($csvuser && false !== $csvuser) {
+                if ($numexpectedfields == count($csvuser)) {
+                    $ret = $this->create_update_user($csvuser, $csvheader);
+                    if (true !== $ret) {
+                        $this->reportmalformeduser( get_string('malformedfilegenericerror', 'local_usersynccsv',
+                                $linenumber) . ' - ' . $ret);
+                        $filemalformed = true;
+                    }
+                } else {
+                    $this->reportmalformeduser( get_string('malformedfilemalformedline', 'local_usersynccsv',
+                        $linenumber));
                     $filemalformed = true;
                 }
-            } else {
-                $this->reportmalformeduser( get_string('malformedfilemalformedline', 'local_usersynccsv',
-                    $linenumber));
-                $filemalformed = true;
-            }
 
+            }
+        } catch (Exception $ex) {
+            $this->reportmalformeduser( get_string('malformedfilegenericerror', 'local_usersynccsv',
+                    $linenumber) . ' - ' . $ex->getMessage());
+            $filemalformed = true;
         }
+
     }
 
     /**
@@ -233,6 +280,16 @@ class local_usersynccsv_usersync
             $filemalformed = false;
             $file = $this->fm->movefiletoworkdir($file);
             $filehandle = fopen($file, 'r');
+            if (!$filehandle) {
+                //permission denied?
+                local_usersynccsv_logger::logerror(get_string('filepermissionserror', 'local_usersynccsv'));
+                if ($this->discardlevel == self::DISCARD_USERERR || $this->discardlevel == self::DISCARD_FILEERR) {
+                    $this->fm->movefiletodiscarddir($file);
+                } else {
+                    $this->fm->movefiletoarchivedir($file);
+                }
+                return;
+            }
             $csvheader = fgetcsv($filehandle, null, $this->csvdelimiter, $this->csvenclosure, $this->csvescape);
             $this->cleanfilerow($csvheader);
             $csvheader = array_flip($csvheader);
@@ -249,7 +306,7 @@ class local_usersynccsv_usersync
             }
             fclose($filehandle);
             // Archive file. Discard if there were errors on user import.
-            if ($filemalformed) {
+            if ($filemalformed && $this->discardlevel == self::DISCARD_USERERR) {
                 $this->fm->movefiletodiscarddir($file);
             } else {
                 $this->fm->movefiletoarchivedir($file);
@@ -260,7 +317,11 @@ class local_usersynccsv_usersync
             if (null !== $filehandle && is_resource($filehandle)) {
                 fclose($filehandle);
             }
-            $this->fm->movefiletodiscarddir($file);
+            if ($this->discardlevel == self::DISCARD_USERERR || $this->discardlevel == self::DISCARD_FILEERR) {
+                $this->fm->movefiletodiscarddir($file);
+            } else {
+                $this->fm->movefiletoarchivedir($file);
+            }
         }
     }
 
@@ -271,30 +332,33 @@ class local_usersynccsv_usersync
     private function checkconfigok() {
 
         if ($this->userkey == '') {
-            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv', 'userkey'));
+            local_usersynccsv_logger::logconferror(get_string('requiredconfigsetting', 'local_usersynccsv', 'userkey'));
             return false;
         }
         if ($this->csvdelimiter == '') {
-            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv', 'csvdelimiter'));
+            local_usersynccsv_logger::logconferror(get_string('requiredconfigsetting', 'local_usersynccsv', 'csvdelimiter'));
             return false;
         }
         if ($this->defpassowrd == '') {
-            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv', 'defpassowrd'));
+            local_usersynccsv_logger::logconferror(get_string('requiredconfigsetting', 'local_usersynccsv', 'defpassowrd'));
             return false;
         }
         return true;
     }
+
     /**
      * Check files to be imported, check tables to be exported
      */
     public function performcheck() {
 
+        raise_memory_limit(MEMORY_HUGE);
+
         if (!$this->fm->checkconfigok()) {
-            local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv', 'File'));
+            local_usersynccsv_logger::logconferror(get_string('configerror', 'local_usersynccsv', 'File'));
             return;
         }
         if (!$this->checkconfigok()) {
-            local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv', 'Setting'));
+            local_usersynccsv_logger::logconferror(get_string('configerror', 'local_usersynccsv', 'Setting'));
             return;
         }
 
@@ -306,7 +370,7 @@ class local_usersynccsv_usersync
         if (count($files) > 0) {
             // Retrieve import info from DB, since there are files to be imported.
             if (!$this->retrievedbimportinfo()) {
-                local_usersynccsv_logger::logerror(get_string('configerror', 'local_usersynccsv', 'Setting'));
+                local_usersynccsv_logger::logconferror(get_string('configerror', 'local_usersynccsv', 'Setting'));
                 return;
             }
         }
@@ -352,7 +416,7 @@ class local_usersynccsv_usersync
             $this->usercustomfiledshortnames[$dbfield->name] = $dbfield;
         }
         if (!$founduserkey) {
-            local_usersynccsv_logger::logerror(get_string('requiredconfigsetting', 'local_usersynccsv', 'userkey'));
+            local_usersynccsv_logger::logconferror(get_string('requiredconfigsetting', 'local_usersynccsv', 'userkey'));
         }
         return $founduserkey;
 
@@ -371,13 +435,15 @@ class local_usersynccsv_usersync
     private function create_update_user($csvuser, $csvheader) {
 
         global $CFG, $DB;
+        $transaction = $DB->start_delegated_transaction();
         try {
             $userkey = $csvuser[$csvheader[$this->userkey]];
             // Look for user with key.
             if ($this->userkeyiscustomfield) {
-                // TODO testare.
-                $userid = $DB->get_field('user_info_data', 'userid',
-                    array ('fieldid' => $this->usercustomfiledshortnames[$this->userkey]->customfieldid, 'data' => $userkey), true);
+                $fieldid = $this->usercustomfiledshortnames[$this->userkey]->customfieldid;
+                /*$userid = $DB->get_field('user_info_data', 'userid',
+                    array ('fieldid' => $fieldid, 'data' => $userkey), true);*/
+                $userid = $DB->get_field_select('user_info_data', 'userid', 'fieldid = ? AND data = ?', array($fieldid, $userkey));
                 if ($userid) {
                     $user = $DB->get_record('user', array('id' => $userid));
                 }
@@ -415,13 +481,13 @@ class local_usersynccsv_usersync
                 if (!property_exists($user, 'password')) {
                     $user->password = hash_internal_user_password($this->defpassowrd);
                 }
-                $DB->insert_record('user', $user);
-                $user = $DB->get_record('user', array($this->userkey => $userkey));
-                if (!$user) {
+                $userid = $DB->insert_record('user', $user);
+                if (!$userid) {
                     return get_string('genericdberror', 'local_usersynccsv', 'user');
+                } else {
+                    $user->id = $userid;
                 }
             } else {
-
                 // Update user information.
                 // Username "could" change. userkey should never change.
                 if (!$DB->update_record('user', $user)) {
@@ -429,8 +495,11 @@ class local_usersynccsv_usersync
                 }
             }
             // Custom fields, if any.
-            return $this->create_update_user_custom_field($customfields, $user);
+            $ret = $this->create_update_user_custom_field($customfields, $user);
+            $transaction->allow_commit();
+            return $ret;
         } catch (Exception $ex) {
+            $transaction->rollback($ex);
             return $ex->getMessage();
         }
     }

@@ -29,5 +29,3 @@ require_once(__DIR__ . '/../../config.php');
 $task = new local_usersynccsv\task\cron_task();
 $task->execute();
 exit;
-$us = new local_usersynccsv_usersync();
-$us->performcheck();

@@ -39,11 +39,8 @@ $string['isexport_help'] = 'If checked, will incrementally export user data to a
 $string['exportdir'] = 'Export Directory';
 $string['exportdir_help'] = 'Only used if exportdir is true. Full path of the working export directory. Moodle needs to have read/write access to this folder, otherwise the plugin won\'t work';
 
-$string['importdirmissing'] = 'Could not find import dir: {$a}';
-$string['importdirnotwritable'] = 'Import dir is not writable. Please check dir permissions: {$a}';
-
-$string['exportdirmissing'] = 'Could not find export dir: {$a}';
-$string['exportdirnotwritable'] = 'Export dir is not writable. Please check dir permissions: {$a}';
+$string['configdirmissing'] = 'Could not find required dir: {$a}';
+$string['configdirnotwritable'] = 'Dir is not writable. Please check dir permissions: {$a}';
 
 $string['csvdelimiter'] = 'CSV Delimiter';
 $string['csvdelimiter_help'] = 'The delimiter parameter sets the field delimiter (one character only).';
@@ -72,3 +69,11 @@ $string['configerror'] = '{$a} configuration error, can\'t start execution';
 $string['requiredconfigsetting'] = 'Required configuration setting not properly set: {$a}';
 $string['defpassowrd'] = 'Default User Password';
 $string['defpassowrd_help'] = 'Default user passowrd (plain), if not found in import file';
+$string['discardlevel'] = 'File discard level';
+$string['discardlevel_help'] = 'Set the discard file policy. USER_ERROR: At least one user is malformed, FILE_ERROR: the file is malformed, NEVER: never discard the file';
+$string['synccsveeventconferrdescription'] = 'Conf error.';
+$string['synccsvconf_error-event'] = 'Config Error';
+$string['filepermissionserror'] = 'File permissions error';
+$string['filemovedlog'] = 'moved to status {$a}';
+$string['loglevel'] = 'Log level';
+$string['loglevel_help'] = 'Set the log level. LOG_FATALERROR: fatal error only, LOG_FILEERROR: fatal/file/user errors, LOG_INFO: info on file processed and fatal/file/user errors';

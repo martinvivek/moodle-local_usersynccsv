@@ -63,7 +63,7 @@ class local_usersynccsv_dbfileman
     /**
      * @var int id of the file we are currently working on. Used for logging
      */
-    public static $currentfileid;
+    public static $currentfileid = 0;
     /**
      * Register file in db, create if not exists, update if exists
      * @param string $filename file absolute name
@@ -90,6 +90,27 @@ class local_usersynccsv_dbfileman
             $file->id = $newid;
         }
         self::$currentfileid = $file->id;
+        switch ($filestatus) {
+            case self::TOIMPORT:
+                $filestatusstr= 'IMPORT';
+                break;
+            case self::WORKING:
+                $filestatusstr = 'WORKING';
+                break;
+            case self::ARCHIVED:
+                $filestatusstr = 'ARCHIVED';
+                break;
+            case self::DISCARDED:
+                $filestatusstr = 'DISCARDED';
+                break;
+            case self::DELETEDFS:
+                $filestatusstr = 'DELETEDFS';
+                break;
+            default:
+                $filestatusstr = 'UNKNOWN';
+                break;
+        }
+        local_usersynccsv_logger::logdofile(get_string('filemovedlog', 'local_usersynccsv', $filestatusstr));
     }
 
     /**

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The EVENTNAME event.
+ * The synccsv_error event.
  *
  * @package    local_usersynccsv
  * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
@@ -24,13 +24,12 @@
 namespace local_usersynccsv\event;
 defined('MOODLE_INTERNAL') || die();
 /**
- * The local_usersynccsv event class.
+ * The synccsv_error event class.
  *
- *
- * @since     Moodle MOODLEVERSION
- * @copyright 2014 YOUR NAME
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- **/
+ * @package    local_usersynccsv
+ * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class synccsv_error extends \core\event\base {
     /**
      * Event init

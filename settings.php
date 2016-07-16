@@ -71,5 +71,22 @@ if ($hassiteconfig) {
         get_string('requiredfields', 'local_usersynccsv'), get_string('requiredfields_help', 'local_usersynccsv'), '', PARAM_TEXT));
 
     $settings->add(new admin_setting_configtext('local_usersynccsv/defpassowrd',
-        get_string('defpassowrd', 'local_usersynccsv'), get_string('defpassowrd_help', 'local_usersynccsv'), '', PARAM_TEXT));
+        get_string('defpassowrd', 'local_usersynccsv'), get_string('defpassowrd_help', 'local_usersynccsv'), 'secret', PARAM_TEXT));
+
+
+    $discardlevel = array(local_usersynccsv_usersync::DISCARD_NEVER => local_usersynccsv_usersync::DISCARD_NEVER,
+        local_usersynccsv_usersync::DISCARD_FILEERR => local_usersynccsv_usersync::DISCARD_FILEERR,
+        local_usersynccsv_usersync::DISCARD_USERERR => local_usersynccsv_usersync::DISCARD_USERERR);
+    $discardleveldef = local_usersynccsv_usersync::DISCARD_FILEERR;
+    $settings->add(new admin_setting_configselect('local_usersynccsv/discardlevel',
+        get_string('discardlevel', 'local_usersynccsv'),
+        get_string('discardlevel_help', 'local_usersynccsv'), $discardleveldef , $discardlevel));
+
+    $loglevel = array(local_usersynccsv_logger::LOG_FATALERROR => local_usersynccsv_logger::LOG_FATALERROR,
+        local_usersynccsv_logger::LOG_FILEERROR => local_usersynccsv_logger::LOG_FILEERROR,
+        local_usersynccsv_logger::LOG_INFO => local_usersynccsv_logger::LOG_INFO);
+    $logleveldef = local_usersynccsv_logger::LOG_INFO;
+    $settings->add(new admin_setting_configselect('local_usersynccsv/loglevel',
+        get_string('loglevel', 'local_usersynccsv'),
+        get_string('loglevel_help', 'local_usersynccsv'), $logleveldef , $loglevel));
 }

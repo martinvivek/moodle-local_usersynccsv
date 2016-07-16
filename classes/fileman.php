@@ -115,7 +115,7 @@ class local_usersynccsv_fileman
      * @return bool
      */
     public function checkconfigok() {
-        return $this->iserror;
+        return !$this->iserror;
     }
 
     /**
@@ -178,7 +178,7 @@ class local_usersynccsv_fileman
         $basename = basename($filefullpath);
         $newname = $this->fullworkdir . DIRECTORY_SEPARATOR . $basename;
         rename($filefullpath, $newname);
-        local_usersynccsv_dbfileman::registerfile($basename, local_usersynccsv_dbfileman::TOIMPORT);
+        local_usersynccsv_dbfileman::registerfile($basename, local_usersynccsv_dbfileman::WORKING);
         return $newname;
     }
 
@@ -301,11 +301,11 @@ class local_usersynccsv_fileman
      */
     private function checkconfigdir($configdir) {
         if (!file_exists($configdir)) {
-            $this->handlefatalerror($configdir.'missing', 'local_usersynccsv', $configdir);
+            $this->handlefatalerror('configdirmissing', 'local_usersynccsv', $configdir);
             return false;
         } else {
             if (!is_writable($configdir)) {
-                $this->handlefatalerror($configdir.'notwritable', 'local_usersynccsv', $configdir);
+                $this->handlefatalerror('configdirnotwritable', 'local_usersynccsv', $configdir);
                 return false;
             } else {
                 return true;
@@ -323,13 +323,13 @@ class local_usersynccsv_fileman
             $this->makedir($subdir);
             if (!file_exists($subdir)) {
                 // Maybe we don't have the right permissions
-                $this->handlefatalerror($subdir.'notwritable', 'local_usersynccsv', $subdir);
+                $this->handlefatalerror('configdirnotwritable', 'local_usersynccsv', $subdir);
                 return false;
             }
         }
         // If we are here, it exists
         if (!is_writable($subdir)) {
-            $this->handlefatalerror($subdir.'notwritable', 'local_usersynccsv', $subdir);
+            $this->handlefatalerror($subdir.'configdirnotwritable', 'local_usersynccsv', $subdir);
             return false;
         }
         return true;
@@ -361,7 +361,7 @@ class local_usersynccsv_fileman
     }
 
     /**
-     * TODO check for dir permissions
+     * Make dir
      * @param string $dirfullpath
      */
     private function makedir($dirfullpath) {
@@ -378,7 +378,8 @@ class local_usersynccsv_fileman
      */
     private function handlefatalerror($smgconst, $component, $a = null) {
         $this->iserror = true;
-        local_usersynccsv_logger::logerror(get_string($smgconst, $component, $a));
+        $msg = get_string($smgconst, $component, $a);
+        local_usersynccsv_logger::logconferror($msg);
     }
 
     /**

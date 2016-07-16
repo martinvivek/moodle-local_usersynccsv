@@ -37,16 +37,35 @@ class local_usersynccsv_logger
 {
 
     /**
+     * Log file and fatal error
+     */
+    const LOG_FILEERROR = 'FILE';
+
+    /**
+     * Log fatal error only
+     */
+    const LOG_FATALERROR = 'FATAL';
+
+    /**
+     * Log info, file error and fatal error
+     */
+    const LOG_INFO = 'INFO';
+
+
+    /**
      * Log that a file status changed
      * @param string $msg
      */
     public static function logdofile( $msg = '') {
 
-        $event = \local_usersynccsv\event\synccsv_dofile::create(array(
-            'objectid' => local_usersynccsv_dbfileman::$currentfileid,
-            'other' => $msg,
-        ));
-        $event->trigger();
+        $config = get_config('local_usersynccsv');
+        if ($config->loglevel == self::LOG_INFO) {
+            $event = \local_usersynccsv\event\synccsv_dofile::create(array(
+                'objectid' => local_usersynccsv_dbfileman::$currentfileid,
+                'other' => $msg,
+            ));
+            $event->trigger();
+        }
     }
 
     /**
@@ -55,8 +74,23 @@ class local_usersynccsv_logger
      */
     public static function logerror( $msg = '') {
 
-        $event = \local_usersynccsv\event\synccsv_error::create(array(
-            'objectid' => local_usersynccsv_dbfileman::$currentfileid,
+        $config = get_config('local_usersynccsv');
+        if ($config->loglevel == self::LOG_INFO || $config->loglevel == self::LOG_FILEERROR) {
+            $event = \local_usersynccsv\event\synccsv_error::create(array(
+                'objectid' => local_usersynccsv_dbfileman::$currentfileid,
+                'other' => $msg,
+            ));
+            $event->trigger();
+        }
+    }
+
+    /**
+     * Log an error while processing a file
+     * @param string $msg
+     */
+    public static function logconferror( $msg = '') {
+
+        $event = \local_usersynccsv\event\synccsvconf_error::create(array(
             'other' => $msg,
         ));
         $event->trigger();
