@@ -281,7 +281,7 @@ class local_usersynccsv_usersync
             $file = $this->fm->movefiletoworkdir($file);
             $filehandle = fopen($file, 'r');
             if (!$filehandle) {
-                //permission denied?
+                // Permission denied maybe.
                 local_usersynccsv_logger::logerror(get_string('filepermissionserror', 'local_usersynccsv'));
                 if ($this->discardlevel == self::DISCARD_USERERR || $this->discardlevel == self::DISCARD_FILEERR) {
                     $this->fm->movefiletodiscarddir($file);
@@ -441,8 +441,6 @@ class local_usersynccsv_usersync
             // Look for user with key.
             if ($this->userkeyiscustomfield) {
                 $fieldid = $this->usercustomfiledshortnames[$this->userkey]->customfieldid;
-                /*$userid = $DB->get_field('user_info_data', 'userid',
-                    array ('fieldid' => $fieldid, 'data' => $userkey), true);*/
                 $userid = $DB->get_field_select('user_info_data', 'userid', 'fieldid = ? AND data = ?', array($fieldid, $userkey));
                 if ($userid) {
                     $user = $DB->get_record('user', array('id' => $userid));

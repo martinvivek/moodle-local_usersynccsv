@@ -322,12 +322,12 @@ class local_usersynccsv_fileman
         if (!file_exists($subdir)) {
             $this->makedir($subdir);
             if (!file_exists($subdir)) {
-                // Maybe we don't have the right permissions
+                // Maybe we don't have the right permissions.
                 $this->handlefatalerror('configdirnotwritable', 'local_usersynccsv', $subdir);
                 return false;
             }
         }
-        // If we are here, it exists
+        // If we are here, it exists.
         if (!is_writable($subdir)) {
             $this->handlefatalerror($subdir.'configdirnotwritable', 'local_usersynccsv', $subdir);
             return false;

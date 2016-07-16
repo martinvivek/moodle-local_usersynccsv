@@ -92,7 +92,7 @@ class local_usersynccsv_dbfileman
         self::$currentfileid = $file->id;
         switch ($filestatus) {
             case self::TOIMPORT:
-                $filestatusstr= 'IMPORT';
+                $filestatusstr = 'IMPORT';
                 break;
             case self::WORKING:
                 $filestatusstr = 'WORKING';
