@@ -110,6 +110,10 @@ class local_usersynccsv_fileman
         $this->checkconfigdirs();
     }
 
+    /**
+     * Return true if the config is ok
+     * @return bool
+     */
     public function checkconfigok() {
         return $this->iserror;
     }
@@ -220,6 +224,9 @@ class local_usersynccsv_fileman
             return $newname;
     }
 
+    /**
+     * Clean up archive dir and db file table
+     */
     public function docleanup() {
         $this->cleanuparchivedir();
         local_usersynccsv_dbfileman::cleanupdbfiletable();
@@ -374,6 +381,11 @@ class local_usersynccsv_fileman
         local_usersynccsv_logger::logerror(get_string($smgconst, $component, $a));
     }
 
+    /**
+     * Return the path where the file is, according to the status and age of the file
+     * @param int $fileid
+     * @return string
+     */
     public function getfilefullpathfromid($fileid) {
         $file = local_usersynccsv_dbfileman::getfilefromid($fileid);
         switch ($file->status) {

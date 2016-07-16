@@ -27,12 +27,26 @@ namespace local_usersynccsv\task;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Cron task
+ *
+ * @package    local_usersynccsv
+ * @copyright  2016 onwards Antonello Moro {http://antonellomoro.it}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class cron_task extends \core\task\scheduled_task {
+    /**
+     * Return the name of the cron task
+     * @return string
+     */
     public function get_name() {
         // Shown in admin screens.
         return get_string('maineventname', 'local_usersynccsv');
     }
 
+    /**
+     * Execute the task
+     */
     public function execute() {
 
         require_once(__DIR__ . '/../../../../config.php');

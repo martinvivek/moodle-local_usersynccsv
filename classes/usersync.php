@@ -265,6 +265,7 @@ class local_usersynccsv_usersync
     }
 
     /**
+     * Check that the settings configuration is ok
      * @return bool true on success
      */
     private function checkconfigok() {

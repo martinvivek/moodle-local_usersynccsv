@@ -36,6 +36,10 @@ defined('MOODLE_INTERNAL') || die();
 class local_usersynccsv_logger
 {
 
+    /**
+     * Log that a file status changed
+     * @param string $msg
+     */
     public static function logdofile( $msg = '') {
 
         $event = \local_usersynccsv\event\synccsv_dofile::create(array(
@@ -45,6 +49,10 @@ class local_usersynccsv_logger
         $event->trigger();
     }
 
+    /**
+     * Log an error while processing a file
+     * @param string $msg
+     */
     public static function logerror( $msg = '') {
 
         $event = \local_usersynccsv\event\synccsv_error::create(array(

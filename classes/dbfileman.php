@@ -35,14 +35,29 @@ defined('MOODLE_INTERNAL') || die();
  */
 class local_usersynccsv_dbfileman
 {
+    /**
+     * To be imported state
+     */
     const TOIMPORT = 0;
 
+    /**
+     * The file in this state is being processed
+     */
     const WORKING = 1;
 
+    /**
+     * The file has been archived
+     */
     const ARCHIVED = 2;
 
+    /**
+     * The file has been discarded
+     */
     const DISCARDED = 3;
 
+    /**
+     * The file has been deleted from file system
+     */
     const DELETEDFS = 4;
 
     /**
@@ -53,6 +68,7 @@ class local_usersynccsv_dbfileman
      * Register file in db, create if not exists, update if exists
      * @param string $filename file absolute name
      * @param int $filestatus file status: 0:to import, 1:work, 2:archived, 3: discarded, 4:deleted from fs
+     * @param string $archivesubdir sub dir where the file is stored
      */
     public static function registerfile($filename, $filestatus, $archivesubdir='') {
         global $DB;
@@ -76,6 +92,11 @@ class local_usersynccsv_dbfileman
         self::$currentfileid = $file->id;
     }
 
+    /**
+     * Retrieve the file object from DB
+     * @param int $fileid
+     * @return mixed
+     */
     public static function getfilefromid($fileid) {
         global $DB;
         return $DB->get_record('local_usersynccsv_file', array('id' => $fileid));

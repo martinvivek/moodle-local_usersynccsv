@@ -32,6 +32,9 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 class synccsv_dofile extends \core\event\base {
+    /**
+     * Event init
+     */
     protected function init() {
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'local_usersynccsv_file';
@@ -39,14 +42,26 @@ class synccsv_dofile extends \core\event\base {
         $this->context = \context_system::instance();
     }
 
+    /**
+     * Get the name of the event
+     * @return string
+     */
     public static function get_name() {
         return get_string('synccsv_dofile-event', 'local_usersynccsv');
     }
 
+    /**
+     * Get the description of the event
+     * @return string
+     */
     public function get_description() {
         return get_string('synccsveeventdescription', 'local_usersynccsv'). " {$this->objectid} {$this->other}.";
     }
 
+    /**
+     * Get the url of the event
+     * @return string
+     */
     public function get_url() {
         return '';
     }
