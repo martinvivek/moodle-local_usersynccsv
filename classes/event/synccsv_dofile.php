@@ -48,7 +48,6 @@ class synccsv_dofile extends \core\event\base {
     }
 
     public function get_url() {
-        global $CFG;
-        return new \moodle_url($CFG->wwwroot .'\local\usersynccsv\file.php', array('id' => $this->objectid));
+        return '';
     }
 }
