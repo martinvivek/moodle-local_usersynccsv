@@ -48,11 +48,6 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('local_usersynccsv/dbfiletablemaxday',
         get_string('dbfiletablemaxday', 'local_usersynccsv'), get_string('dbfiletablemaxday_help',
             'local_usersynccsv'), 20, PARAM_INT));
-    $settings->add(new admin_setting_configcheckbox('local_usersynccsv/isexport',
-        get_string('isexport', 'local_usersynccsv'), get_string('isexport_help', 'local_usersynccsv'), '0'));
-    $settings->add(new admin_setting_configtext('local_usersynccsv/exportdir',
-        get_string('exportdir', 'local_usersynccsv'), get_string('exportdir_help', 'local_usersynccsv'), '', PARAM_TEXT));
-    $ADMIN->add('localplugins', $settings);
 
     $auths = core_component::get_plugin_list('auth');
     if (array_key_exists('manual', $auths)) {
@@ -89,4 +84,10 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configselect('local_usersynccsv/loglevel',
         get_string('loglevel', 'local_usersynccsv'),
         get_string('loglevel_help', 'local_usersynccsv'), $logleveldef , $loglevel));
+
+    $settings->add(new admin_setting_configcheckbox('local_usersynccsv/isexport',
+        get_string('isexport', 'local_usersynccsv'), get_string('isexport_help', 'local_usersynccsv'), '0'));
+    $settings->add(new admin_setting_configtext('local_usersynccsv/exportdir',
+        get_string('exportdir', 'local_usersynccsv'), get_string('exportdir_help', 'local_usersynccsv'), '', PARAM_TEXT));
+    $ADMIN->add('localplugins', $settings);
 }
